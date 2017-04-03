@@ -1,0 +1,66 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="ofs-dashboard">
+    <style include="app-theme">
+         :host {
+            display: block;
+            padding: 10px;
+        }
+    </style>
+    <template>
+        <div class="card">
+            <!--<div class="circle">3</div>-->
+            <!--<div class="circle"><img src="[[udata.photo]]"></div>-->
+            <h1>Dashboard</h1>
+            <h4>In Development</h4>
+            <!--<p>[[parseJson(udata.fname)]]</p>-->
+            <!--<p>[[parseJson(udata.email)]]</p>-->
+            <!--<p>[[getLat(zdata, udata.zipcode)]], [[getLng(zdata, udata.zipcode)]]</p>-->
+            <!--<p>[[parseJson(udata)]]</p>-->
+            <paper-textarea label="Current Zip" value="{{udata.zipcode}}"></paper-textarea>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'ofs-dashboard',
+            getLat: function (zips, zip) {
+                return this.getCord(zips, zip, "LAT");
+            },
+            getLng: function (zips, zip) {
+                return this.getCord(zips, zip, "LNG");
+            },
+            getCord: function (zips, zip, type) {
+                if (zips[zip]) return zips[zip][type];
+                return "";
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function (data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function (acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function (acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

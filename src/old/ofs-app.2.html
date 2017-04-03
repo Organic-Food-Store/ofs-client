@@ -1,0 +1,594 @@
+<link rel="import" href="./../bower_components/polymer/polymer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="./../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="./../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="./../bower_components/app-route/app-location.html">
+<link rel="import" href="./../bower_components/app-route/app-route.html">
+<link rel="import" href="./../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="./../bower_components/paper-material/paper-material.html">
+<link rel="import" href="./../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="./../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="./../bower_components/paper-input/paper-input.html">
+<link rel="import" href="./../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="./../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="./../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="./../bower_components/paper-card/paper-card.html">
+<link rel="import" href="./../bower_components/gold-zip-input/gold-zip-input.html">
+<link rel="import" href="./../bower_components/polymer-simple-slider/simple-slider.html">
+<!--<link rel="import" href="">-->
+<link rel="import" href="./../bower_components/google-map/google-map.html">
+<link rel="import" href="./../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="./app-theme.html">
+<link rel="import" href="./my-icons.html">
+<link rel="import" href="./food-card.html">
+<link rel="import" href="./food-grid.html">
+<link rel="import" href="./total-price.html">
+
+<!--
+TODO:
+    - Finalize Readme
+    - Get an address validator / zip getter
+    - Style the search in food-grid
+    - Make a basic checkout view
+    - Manage logging in
+    - Make the Store Selector
+    - Make the Order Selector
+    - Finish Total Price Calculator for Cart & Checkout
+    - Make sure tab selection doesn't alter cart count
+    - Add brown in to the color scheme
+    - Make logo colr
+-->
+
+<dom-module id="ofs-app">
+    <style include="app-theme">
+        app-toolbar {
+            color: var(--menu-text-color);
+            /*background-color: var(--darker-primary-color);*/
+        }
+
+        paper-button {
+            color: var(--primary-text-color);
+            background-color: var(--menu-background-color);
+            --paper-button-ink-color: var(--accent-color);
+            font-weight: 400;
+            font-size: inherit;
+        }
+
+        app-toolbar paper-icon-button {
+            --paper-icon-button-ink-color: var(--menu-text-color);
+        }
+
+        .loggingButton {
+            height: 32px; /*50%;*/
+        }
+
+        @media only screen and (max-width: 565px) {
+            .smallify {
+                width: 26px;
+                padding: 1px;
+            }
+
+            #mainTitle {
+                margin-left: 2px;
+            }
+        }
+    </style>
+    <template>
+        <firebase-app
+            auth-domain="organic-food-store.firebaseapp.com"
+            database-url="https://organic-food-store.firebaseio.com/"
+            api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg">
+        </firebase-app>
+        <firebase-auth
+            id="auth"
+            user="{{user}}"
+            provider="google"
+            signed-in="{{loggedIn}}"
+            status-known="{{userStatus}}"
+            on-error="handleError">
+        </firebase-auth>
+        <firebase-document
+            path="/users/{{user.uid}}"
+            data="{{userData}}">
+        </firebase-document>
+        <firebase-document
+            path="/stock"
+            data="{{latestStock}}">
+        </firebase-document>
+        <firebase-document
+            path="/branches"
+            data="{{latestStores}}">
+        </firebase-document>
+        <iron-ajax id="zipsAjax" auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
+        <!--<iron-ajax id="addressAjax" auto url="https://organic-food-store.herokuapp.com/api/addrToCoords/[[userData.address]]" handle-as="json" last-response="{{addrJsonData}}"></iron-ajax>-->
+        <iron-ajax id="userExistingAjax" auto url="https://organic-food-store.herokuapp.com/api/userExists/[[user.uid]]" handle-as="json" last-response="{{userExists}}"></iron-ajax>
+        <iron-ajax id="closestStoreAjax" auto url="https://organic-food-store.herokuapp.com/api/closestStore/[[userData.zipcode]]" handle-as="json" last-response="{{closestStoreId}}"></iron-ajax>
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
+            <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
+                <app-toolbar>Menu</app-toolbar>
+                <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a class="linkNullify" name="home" href="/home" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Home
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="dashboard" href="/dashboard" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Dashboard
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="tracking" href="/tracking" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Tracking
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="store" href="/store" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Store
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="cart" href="/cart" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Cart
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="about" href="/about" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            About
+                        </paper-icon-item>
+                    </a>
+                </paper-menu>
+            </app-drawer>
+            <app-header-layout has-scrolling-region>
+                <app-header condenses reveals effects="waterfall">
+                    <app-toolbar>
+                        <a href="/{{backPage}}" class="linkNullify" tabindex="-1">
+                            <paper-icon-button class="smallify" icon="my-icons:arrow-back"></paper-icon-button>
+                        </a>
+                        <template is="dom-if" if="[[bigEnough(currentWidth)]]" tabindex="-1">
+                            <a href="/" class="linkNullify" tabindex="-1">
+                                <paper-icon-button class="smallify" icon="my-icons:menu"></paper-icon-button>
+                            </a>
+                        </template>
+                        <div id="mainTitle" main-title>
+                            <template is="dom-if" if="[[bigEnough(currentWidth)]]">OFS | </template>[[capitalize(page)]]</div>
+                        <paper-button class="loggingButton" on-tap="handleLogin" raised>[[userAction]]</paper-button>
+                        <template is="dom-if" if="[[showDashboard(userData.fname, currentWidth)]]">
+                            <a href="/dashboard" class="linkNullify" tabindex="-1">
+                                <paper-button class="loggingButton" raised>
+                                    Hi, [[capitalize(userData.fname)]]!
+                                </paper-button>
+                            </a>
+                        </template>
+                        <paper-icon-button class="smallify" icon="my-icons:menu" drawer-toggle></paper-icon-button>
+                    </app-toolbar>
+                </app-header>
+                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+                    <ofs-home name="home" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-home>
+                    <ofs-about name="about" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-about>
+                    <ofs-dashboard name="dashboard" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-dashboard>
+                    <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
+                    <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-cart>
+                    <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-checkout>
+                    <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
+                    <ofs-view404 name="view404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-view404>
+                </iron-pages>
+                <!--<template is="dom-if" if="[[isHome(page)]]">
+                    <paper-textarea label="Current Zip" value="{{userData.zipcode}}"></paper-textarea>
+                    <paper-textarea label="Incoming Firebase Data" value="[[parseJson(user, userData, userDataBackup)]]"></paper-textarea>
+                </template>-->
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+    <script>
+        Polymer({
+            is: 'ofs-app',
+            properties: {
+                userDataBackup: {
+                    type: Object,
+                    notify: true,
+                    value: {}
+                }, makeBackup: {
+                    type: Boolean,
+                    notify: true,
+                    value: true
+                }, userData: {
+                    type: Object,
+                    notify: true,
+                }, userAction: {
+                    type: String,
+                    notify: true,
+                    computed: "getUserAction(user, loggedIn, userStatus)"
+                }, existsAjaxReq: {
+                    type: String,
+                    notify: true,
+                    value: ""
+                }, storeAjaxReq: {
+                    type: String,
+                    notify: true,
+                    value: ""
+                }, page: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: "pageChanged"
+                }, backPage: {
+                    type: String,
+                    computed: "goBack(page)"
+                }, responsiveWidth: {
+                    type: Number,
+                    notify: true,
+                    computed: "getResponsiveWidth(page)"
+                }, currentHeight: {
+                    type: Number,
+                    notify: true
+                }, currentWidth: {
+                    type: Number,
+                    notify: true
+                }, drawerAlign: {
+                    type: String,
+                    notify: true,
+                    computed: "getDrawerAlignment(currentWidth, responsiveWidth, page)"
+                }
+            },
+            listeners: {
+                'iron-resize': 'setWidthAndHeight',
+                'response': 'handleResponse'
+            },
+            observers: [
+                'routePageChanged(routeData.page)',
+                'zipLatLng(userData.zipcode)',
+                'addrLatLng(userData.address)',
+                'setUpNewUser(userExists, existsAjaxReq, user, latestStores, latestStock)',
+                'setNewStore(closestStoreId, storeAjaxReq, userData.zipcode)',
+                'keepAnonBackup(userData.*)'
+            ],
+            ready: function() {},
+            handleLogin: function () {
+                // if(user && loggedIn && userStatus && user.isAnonymous) return "Merge Now";
+                // if(user && loggedIn && userStatus && !user.isAnonymous) return "Sign Out"
+                // else return automagically login as anonymous
+                // if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) { // Make sure to check if logged in as anonymous or not logged in
+                if(!this.user) {
+                    log("LOGGING IN...");
+                    var anonymousUid = this.user.uid;
+                    log(anonymousUid);
+                    this.set("makeBackup", false);
+                    this.set("userData", null);
+                    this.$.auth.signOut();
+                    this.$.auth.signInWithPopup();
+                    log("MERGING "+anonymousUid+" INTO THE FIREBASE...");
+                    log("anonymousUid");
+                    // Handle Linking In - Manually Move over Data from userDataBackup, whether anonymous or not.
+                        // turn off user backing data up
+                        // Delete data in users
+                        // Sign Out of Anonymous
+                        // Delete account
+                    // Manually Move Data
+                        // Manually create key with google uid
+                        // Put Firebase uid as user.uid
+                        // If Email data from google exists, use that, else Replace Firebase Email with backup Email, unless empty
+                        // If photoURL data from google exists, use that, else Replace Firebase photoURL with backup photoURL, unless invalid or empty
+                        // If Firstname data from google exists, use that, else Replace Firebase fname with backup fname, unless Customer or empty
+                        // If Lastname data from google exists, use that, else Replace Firebase lname with backup lname, unless empty
+                        // Replace Firebase Address with backup Address, unless invalid or empty
+                        // Folllow suit addrLat, addrLng
+                        // Replace Firebase zipcode with backup zipcode, unless invalid or empty
+                        // Folllow suit with storeId, zipLat, zipLng
+                        // Replace Firebase orderHistory with lesser objects; basically do a shallow merge with non duplicacy
+                        // Replace Firebase paymentMethods with lesser objects; basically do a shallow merge with non duplicacy
+                    // Code to get new google user data
+                        // temp.id = user.uid;
+                        // temp.email = user.email;
+                        // temp.photo = user.photoURL;
+                        // temp.fname = user.displayName.split(' ')[0];
+                        // temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length-1] : "";
+                    this.set("makeBackup", true);
+                    // Reload
+                } else {
+                    log("LOGGING OUT...");
+                    this.$.auth.signOut();
+                    location.reload();
+                }
+            },
+            handleResponse: function (event) {
+                log("=============================NEW AJAX RESPONSE============================");
+                log(event);
+                log(event.path[0].id);
+                log(event.path[0].requestUrl);
+                if(event.path[0].id === "closestStoreAjax")
+                    this.set("storeAjaxReq", event.path[0].requestUrl);
+                if(event.path[0].id === "userExistingAjax")
+                    this.set("existsAjaxReq", event.path[0].requestUrl);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            },
+            zipLatLng: function(zip) {
+                log("zip");
+                log(zip);
+                log("this.zipsJsonData");
+                log(this.zipsJsonData);
+                if(this.zipsJsonData) {
+                    log("this.zipsJsonData[zip]");
+                    log(this.zipsJsonData[zip]);
+                }
+                if(this.zipsJsonData && this.zipsJsonData[zip]) {
+                    log("SETTING NEW ZIP LAT LNG DATA...")
+                    this.set("userData.ziplat", this.zipsJsonData[zip].LAT);
+                    this.set("userData.ziplng", this.zipsJsonData[zip].LNG);
+                }
+            },
+            addrLatLng: function(addr) {
+
+            },
+            setUpNewUser: function (exists, URL, user, stores, stock) { // Deal with either on serverside, or somewhere else so that all the data exists
+                log("===========================NEW USER EXIST CHECK===========================");
+                log("exists");
+                log(exists);
+                log("URL");
+                log(URL);
+                log("user");
+                log(user);
+                log("stores");
+                log(stores);
+                log("stock");
+                log(stock);
+                if(exists.exists === false)
+                    log("exists.exists === false");
+                if(exists && this.user && exists.exists === false) {
+                    log("GOTTA ADD "+this.user.uid+"! CREATING NEW USER...");
+                    temp = {};
+                    temp.id = user.uid;
+                    temp.email = "";
+                    temp.photo = "./../images/anon.png";
+                    temp.fname = "Customer";
+                    temp.lname = "";
+                    if(!user.isAnonymous) {
+                        temp.email = user.email;
+                        temp.photo = user.photoURL;
+                        temp.fname = user.displayName.split(' ')[0];
+                        temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length-1] : "";
+                    }
+                    temp.address = "";
+                    temp.addrlat = "";
+                    temp.addrlng = "";
+                    temp.zipcode = "";
+                    temp.ziplat = "";
+                    temp.ziplng = "";
+                    temp.storeId = "";
+                    temp.storelat = "";
+                    temp.storelng = "";
+                    temp.cart = {};
+                    for(var store in stores) {
+                        temp.cart[stores[store]] = {};
+                        for(var food in stock)
+                            temp.cart[stores[store]][stock[food]] = "0";
+                    }
+                    temp.orderHistory = [];
+                    temp.paymentMethods = [];
+                    this.set("userData", temp);
+                }
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            },
+            setNewStore: function (closestId, URL, zipcode) {
+                log("==========================NEW STORE LOCATION GET==========================");
+                log("closestId");
+                log(closestId);
+                log("URL");
+                log(URL);
+                log("zipcode");
+                log(zipcode);
+                log("this.userData.zipcode");
+                log(this.userData.zipcode);
+                if(zipcode && zipcode != "undef-ined")
+                    log("passed in zipcode is good.");
+                else
+                    log("passed in zipcode is bad!");
+                if(this.userData.zipcode && this.userData.zipcode != "undef-ined")
+                    log("global zipcode is good.");
+                else
+                    log("global zipcode is bad!");
+                if(closestId && closestId.storeId && this.userData.zipcode && this.userData.zipcode != "undef-ined") {
+                    log("SETTING STORE ID TO "+closestId.storeId);
+                    this.set("userData.storeId", closestId.storeId);
+                }
+                if(this.zipsJsonData && this.zipsJsonData[this.userData.storeId]) {
+                    log("SETTING NEW STORE LAT LNG DATA...")
+                    this.set("userData.storelat", this.zipsJsonData[this.userData.storeId].LAT);
+                    this.set("userData.storelng", this.zipsJsonData[this.userData.storeId].LNG);
+                }
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            },
+            keepAnonBackup: function(changeRecord) {
+                log("===========================ANONYMOUS BACKING UP===========================");
+                // log("changeRecord");
+                // log(changeRecord);
+                log("changeRecord Path Change - " + changeRecord.path+': '); //+ parseJson(changeRecord.value));
+                log(changeRecord.value);
+                // log("this.user");
+                // log(this.user);
+                if(this.user) {
+                    log("this.user.uid");
+                    log(this.user.uid);
+                    log("this.user.isAnonymous");
+                    log(this.user.isAnonymous);
+                }
+                log("this.loggedIn");
+                log(this.loggedIn);
+                log("this.userStatus");
+                log(this.userStatus);
+                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
+                    log("MAKING A BACKUP...");
+                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
+                    this.set("userDataBackup", this.userData);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            },
+            getUserAction: function (user, loggedIn, userStatus) {
+                log("==========================USER STATUS MONITORING==========================");
+                // log("user");
+                // log(user);
+                if(user) {
+                    log("user.uid");
+                    log(user.uid);
+                    log("user.isAnonymous");
+                    log(user.isAnonymous);
+                }
+                log("loggedIn");
+                log(loggedIn);
+                log("userStatus");
+                log(userStatus);
+                if(!this.user && !loggedIn && userStatus)
+                    log("SIGNING IN ANONYMOUSLY...");
+                if(!this.user && !loggedIn && userStatus)
+                    this.$.auth.signInAnonymously();
+                // if(user && loggedIn && userStatus && user.isAnonymous) return "You're Anonymous";
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                if(user && loggedIn && userStatus && !user.isAnonymous)
+                    return "Sign Out";
+                return "Sign In";
+            },
+            handleError: function (event) {
+                log("NEW AJAX **ERROR**!");
+                log(event);
+            },
+            isHome: function (p) {
+                return !(p === "home");
+            },
+            setWidthAndHeight: function () {
+                this.set('currentWidth', this.$$("app-drawer-layout").clientWidth);
+                this.set('currentHeight', this.$$("iron-pages").clientHeight);
+            },
+            bigEnough: function(width) {
+                return width > 600;
+            },
+            showDashboard: function (name, width) {
+                return name && this.bigEnough(width);
+            },
+            getResponsiveWidth(page) {
+                if(page === "home")
+                    return 9999;
+                return 2000;
+            },
+            goBack: function (page) {
+                var order = ["home ", "dashboard ", "about", "home", "dashboard", "tracking", "home ", "dashboard ", "store", "cart", "checkout"];
+                return order[order.indexOf(page)-1];
+            },
+            getDrawerAlignment: function (width, limit, page) {
+                console.log("width");
+                console.log(width);
+                console.log("limit");
+                console.log(limit);
+                console.log("page");
+                console.log(page);
+                return (limit === 9999 || page === "home") ? "right" : (width > 2000 ? "left" : "right");
+                //return limit > width ? (page === "home" ? "right" : (width > 2000 ? "left" : "right")) : "left";
+            },
+            routePageChanged: function (page) {
+                this.page = page || 'home';
+                if (!this.$.drawer.persistent)
+                    this.$.drawer.close();
+            },
+            pageChanged: function (page) {
+                var resolvedPageUrl = this.resolveUrl('ofs-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this.showPage404, true);
+            },
+            showPage404: function () {
+                this.page = 'view404';
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function(data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function(acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+
+        var debug = false;
+        function log(message) {
+            if(debug) console.log(message);
+        }
+
+        function getObjectKeys(obj) {
+            if(!obj) return [];
+            return Object.keys(obj);
+        }
+
+        function getObjectValues(obj) {
+            if(!obj) return [];
+            return Object.values(obj);
+        }
+
+        function isInt(value) {
+            if((""+value).toLowerCase() == "[object object]")
+                return false;
+            // console.log("parsing "+value);
+            return !isNaN(value) &&
+                parseInt(Number(value)) == value &&
+                !isNaN(parseInt(value, 10));
+        }
+
+        function capitalize(string) {
+            if(!string) return "";
+            var arr = string.split(" ");
+            for(str in arr)
+                if(arr[str].length > 2 && arr[str].toLowerCase() != "the" && arr[str].toLowerCase() != "and") {
+                    arr[str] = arr[str].replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
+                    arr[str] = arr[str].charAt(0).toUpperCase() + arr[str].slice(1);
+                }
+            return arr.join(" ");
+            // if(string) return string.replace(/\b\w/g, function(l){ return l.toUpperCase() });
+        }
+
+        function flattenJson(data) {
+            var result = {};
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    for (var deepKey in data[key]) {
+                        if (data[key].hasOwnProperty(deepKey)) {
+                            result[deepKey] = data[key][deepKey];
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+    </script>
+</dom-module>

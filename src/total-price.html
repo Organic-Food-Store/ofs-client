@@ -1,0 +1,118 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="total-price">
+    <style include="app-theme">
+         :host {}
+    </style>
+    <template>
+        <firebase-document path="/categories" data="{{categories}}"> </firebase-document>
+        <firebase-document path="/stores/[[storeId]]/stock" data="{{data}}"> </firebase-document>
+        <template is="dom-repeat" items="{{totals}}" as="item" index-as="index">
+            <p>[[capitalize(item.category)]] Total: ${{item.total}}</p>
+        </template>
+        <!--<paper-textarea label="Total Price Data" value="[[parseJson(cart, storeId, userId, categories, quantities, data)]]"></paper-textarea>-->
+    </template>
+    <script>
+        Polymer({
+            is: 'total-price',
+            properties: {
+                cart: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                }, checkout: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                }, totals: {
+                    type: Array,
+                    notify: true,
+                    computed: "getTotal(storeId, categories, quantities, data)"
+                }
+            },
+            getTotal: function (sId, categories, quantas, data) {
+                if (!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
+                    Object) return [];
+                log("=============================GET TOTAL FUNCTION============================");
+                log("getTotal: sId");
+                log(sId);
+                log("getTotal: categories");
+                log(categories);
+                log("getTotal: quantas");
+                log(quantas);
+                log("getTotal: data");
+                log(data);
+                log("!data");
+                log(!data);
+                log(
+                    "!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object"
+                );
+                log(!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
+                    Object);
+                var rtn = [];
+                for (var i in categories) rtn.push(this.getCategoryTotal(categories[i], quantas[sId], data));
+                rtn.push(this.getCategoryTotal("all", quantas[sId], data));
+                log("Total rtn");
+                log(rtn);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                return rtn;
+            },
+            getCategoryTotal: function (category, quantas, data) {
+                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
+                    Object) return {};
+                log("========================GET CATEGORY TOTAL FUNCTION========================");
+                log("getCategoryTotal: category");
+                log(category);
+                log("getCategoryTotal: quantas");
+                log(quantas);
+                log("getCategoryTotal: data");
+                log(data);
+                log(
+                    "!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object"
+                );
+                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
+                    Object);
+                var rtn = {
+                    category: (category === "all") ? "cart" : category
+                };
+                var total = 0;
+                for (var i in data)
+                    if (category == "all" || data[i].category == category) total += data[i].price * quantas[
+                        data[i].id];
+                rtn["total"] = total;
+                log("Category Total rtn");
+                log(rtn);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                return rtn;
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function (data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function (acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function (acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

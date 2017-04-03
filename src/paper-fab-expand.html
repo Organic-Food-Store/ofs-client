@@ -1,0 +1,178 @@
+<link rel="import" href="./../../bower_components/polymer/polymer.html">
+<link rel="import" href="./../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="./../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="./../../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="./../../bower_components/paper-fab/paper-fab.html">
+
+<dom-module id="paper-fab-expand">
+    <template>
+        <style>
+            #paper-fab-expand-host {
+                margin: 1em;
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                z-index: 99999;
+            }
+            #paper-fab-expand-host paper-fab {
+                margin: 15px auto 0;
+                position: relative;
+                opacity: 0;
+                transition: all .2s;
+                --paper-fab-background: var(--paper-fab-expand-primary);
+            }
+            #paper-fab-expand-host:hover paper-fab:not(:last-of-type) {
+                width: 40px;
+                height: 40px;
+                margin: 20px auto 0;
+                opacity: 1;
+                display: block;
+            }
+            #paper-fab-expand-host paper-fab:hover {
+                @apply(--shadow-elevation-4dp);
+            }
+            #paper-fab-expand-host #main {
+                display: block;
+                --paper-fab-background: var(--paper-fab-expand-primary);
+                transition: all .2s;
+                opacity: 1;
+            }
+            #paper-fab-expand-host:hover #main {
+                background-color: var(--paper-fab-expand-secondary);
+                @apply(--shadow-elevation-8dp);
+            }
+            #paper-fab-expand-host paper-badge {
+                --paper-badge-background: var(--paper-fab-expand-primary);
+                margin-left: -5px;
+                transition: all .2s;
+                opacity: 0;
+            }
+            #paper-fab-expand-host:hover paper-badge {
+                opacity: 1;
+            }
+            #paper-fab-expand-host #mainBadge {
+                --paper-badge-background: var(--paper-fab-expand-secondary);
+                opacity: 1;
+                transition: all .2s;
+                margin-top: 7.5px;
+                margin-left: -7.5px;
+                --paper-badge-text-color: var(--paper-fab-expand-primary);
+            }
+            #paper-fab-expand-host:hover #mainBadge {
+                opacity: 0;
+            }
+        </style>
+        <div id="paper-fab-expand-host" on-mouseover="_fHovered" on-mouseout="_fUnhovered">
+            <!--FOR MIRAT!!!-->
+            <template is="dom-repeat" items="{{data}}" as="item" index-as="index">
+                <paper-fab mini
+                    id="fab{{index}}"
+                    data-args="{{item.id}}"
+                    on-tap="_handleTap"
+                    style="
+                        background-color: #{{item.primC}};
+                        transition-delay: {{_getTime(index)}}ms;"
+                    icon="{{item.iconCode}}"
+                    src="{{item.imgSrc}}"
+                    disabled="{{hovrd}}"></paper-fab>
+                <paper-tooltip
+                    for="fab{{index}}"
+                    position="left"
+                    animation-delay="0">{{item.name}}</paper-tooltip>
+                <paper-badge
+                    style="margin-top: {{_getBadgeMargin(index)}}px; display: {{_displayShown(item.notifs)}};"
+                    for="fab{{index}}"
+                    label="{{item.notifs}}"></paper-badge>
+            </template>
+            <paper-fab
+                id="main"
+                icon="{{mainIcon}}"
+                src="{{mainSrc}}"
+                on-tap="_handleTap"></paper-fab>
+            <paper-badge id="mainBadge" for="main" label="{{currNotifs}}"></paper-badge>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'paper-fab-expand',
+            behaviors: [],
+            properties: {
+                mainSrc: {
+                    type: String,
+                    value: ''
+                },
+                mainIcon: {
+                    type: String,
+                    value: 'add'
+                },
+                hovrd: {
+                    type: Boolean,
+                    value: true,
+                    notify: true
+                },
+                currNotifs: {
+                    type: Number,
+                    notify: true,
+                    computed: '_getNotifSum(data, hovrd)'
+                },
+                data: {
+                    type: Object,
+                    notify: true,
+                    value: [{
+                        "name": "Oindril Dutta 1",
+                        "id": "232",
+                        "primC": "ff0000",
+                        "imgSrc": "",
+                        "iconCode": "perm-identity",
+                        "notifs": 1
+                    }, {
+                        "name": "Oindril Dutta 1",
+                        "id": "232",
+                        "primC": "00ff00",
+                        "imgSrc": "",
+                        "iconCode": "perm-identity",
+                        "notifs": 1
+                    }]
+                }
+            },
+            _fHovered: function(e) {
+                this.fire("hovrd");
+                this.set("hovrd", false);
+            },
+            _fUnhovered: function(e) {
+                this.fire("unhovrd");
+                this.set("hovrd", true);
+            },
+            _handleTap: function(e) {
+                var key = 0;
+                while(e.path[key].localName != "paper-fab") {
+                    key++;
+                }
+                if(e.path[key].id == "main")
+                    this.fire("tapd", {mainTapped: true});
+                else
+                    this.fire("tapd", {mainTapped: false, dataId: e.path[key].dataArgs});
+            },
+            _getTime: function(idx) {
+                return (this.data.length - idx) * 20;
+            },
+            _getBadgeMargin(idx) {
+                return 10 + idx*5;
+            },
+            _isShown(max) {
+                return max > 0;
+            },
+            _displayShown(max) {
+                if(max > 0)
+                    return "initial";
+                return "none";
+            },
+            _getNotifSum: function(data, hover) {
+                var sum = 0;
+                for(idx in data)
+                    sum = sum + data[idx].notifs;
+                return sum;
+            }
+        });
+    </script>
+</dom-module>

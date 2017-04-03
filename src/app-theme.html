@@ -1,0 +1,239 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="app-theme">
+    <style>
+         :root {
+            /*Global Color Variable Styles*/
+            /*----------------------------------------------------------------*/
+            /*Primary Global App Colors*/
+            --darker-primary-color: #46a049;
+            --dark-primary-color: #388E3C;
+            --primary-color: #4CAF50;
+            --light-primary-color: #C8E6C9;
+            /*Accent Global App Colors*/
+            --darker-accent-color: #FFA000;
+            --dark-accent-color: #FFC107;
+            --accent-color: #FFCC33;
+            --primary-accent-color: #FFD966;
+            --light-accent-color: #FFECB3;
+            /*Alternate Accent Global App Colors*/
+            --darker-alt-accent-color: #5D4037;
+            --dark-alt-accent-color: #795548;
+            --alt-accent-color: #aa7c6e;
+            --light-alt-accent-color: #D7CCC8;
+            /*Text Global App Colors*/
+            --primary-text-color: #212121;
+            --accent-text-color: #FFC107;
+            --alt-text-color: #5D4037;
+            --secondary-text-color: #757575;
+            --disabled-text-color: #BDBDBD;
+            --menu-text-color: #FFFFFF;
+            /*Material Design Spec General Global App Colors*/
+            --primary-background-color: #C8E6C9;
+            --secondary-background-color: #DDDDDD;
+            --menu-background-color: #FFFFFF;
+            --divider-color: #BDBDBD;
+            /*
+            Colors to try for accent color
+            #FFD24D
+            #FFCC33
+            #FFC61A
+
+            #FFE57F
+            #FFD740
+            #FFC400
+            #FFAB00
+
+            #5D4037
+            #795548
+            #D7CCC8
+
+            --darker-accent-color: #81D4FA;
+            --dark-accent-color: #B3E5FC;
+            --accent-color: #E1F5FE;
+            --light-accent-color: #E6F7FE;
+            */
+            /*Paper Elements Global Style*/
+            /*----------------------------------------------------------------*/
+            /*Paper Input Global Styles*/
+            --paper-input-container-color: var(--primary-text-color);
+            --paper-input-container-focus-color: var(--dark-primary-color);
+            --paper-input-container-input-color: var(--alt-text-color);
+            --paper-input-container-invalid-color: var(--darker-accent-color);
+            --paper-input-prefix: {
+                color: var(--alt-text-color);
+            }
+            --paper-input-suffix: {
+                color: var(--alt-text-color);
+            }
+            /*Paper Menu Global Styles*/
+            --paper-menu-color: var(--accent-text-color);
+            --paper-menu-background-color: var(--menu-background-color);
+            --paper-menu-selected-item: {
+                background-color: var(--dark-accent-color);
+                color: var(--menu-text-color);
+                font-weight: bold;
+            }
+            /*--menu-link-color: #111111;*/
+            /*Paper Card Global Styles*/
+            --paper-card-background-color: var(--menu-background-color);
+            /*Paper Tabs Global Styles*/
+            --paper-tabs-selection-bar-color: var(--accent-color);
+            --paper-tabs-selection-bar: {
+                border-bottom-width: 5px;
+            }
+            --paper-tabs-container: {
+                background-color: var(--dark-alt-accent-color);
+                color: var(--dark-accent-color);
+            }
+            /*Paper Button Global Styles*/
+            --paper-button-ink-color: var(--primary-color);
+            /*Paper Icon Button Global Styles*/
+            --paper-icon-button: {
+                color: var(--menu-background-color);
+            }
+            --paper-icon-button-ink-color: var(--primary-accent-color);
+            /*Paper Item Icon Global Styles*/
+            --paper-item-icon: {
+                color: var(--dark-alt-accent-color);
+            }
+            --paper-item-icon-width: 40px;
+            /*Paper Drawer Panel Global Styles*/
+            --app-drawer-width: 175px;
+            /*--drawer-menu-color: #FFFFFF;*/
+            /*--drawer-border-color: 1px solid #CCC;*/
+            /*--drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);*/
+        }
+
+        /*iron-icon {
+            color: var(--darker-alt-accent-color);
+        }*/
+
+        paper-button:hover{
+            @apply(--shadow-elevation-6dp);
+        }
+
+        paper-icon-item:hover{
+            @apply(--shadow-elevation-4dp);
+        }
+
+        /*paper-tabs paper-tab.iron-selected {
+            @apply(--shadow-elevation-8dp);
+        }
+
+        paper-tab:hover {
+            @apply(--shadow-elevation-4dp);
+        }*/
+
+        #drawerMenu {
+            padding: 0px;
+        }
+
+        #drawerMenu a paper-icon-item {
+            margin-top: 7.5px;
+        }
+
+        #drawerMenu a.iron-selected paper-icon-item {
+            background-color: var(--dark-accent-color);
+            color: var(--menu-text-color);
+            font-weight: bold;
+            @apply(--shadow-elevation-6dp);
+        }
+
+        #drawerMenu a.iron-selected paper-icon-item iron-icon {
+            color: var(--menu-text-color);
+        }
+
+        app-toolbar {
+            color: var(--menu-text-color);
+            background-color: var(--primary-color);
+        }
+
+        app-toolbar.transparent {
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        iron-pages {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        paper-textarea {
+            margin: 25px;
+        }
+
+        paper-dialog {
+            padding: 40px;
+            background-color: var(--menu-background-color);
+        }
+
+        paper-button {
+            text-transform: none;
+            /*color: var(--primary-text-color);*/
+            color: var(--alt-text-color);
+            background-color: var(--accent-color);
+            font-weight: 500;
+            font-size: x-large;
+            display: flex;
+            text-align: center;
+        }
+
+        paper-button iron-icon {
+            margin-right: 7px;
+        }
+
+        h4 {
+            color: var(--secondary-text-color);
+            font-weight: 100;
+        }
+
+        a {
+            color: unset;
+            text-decoration: none;
+        }
+
+        .fill {
+            width: 100%;
+            height: 100%;
+        }
+
+        .fill-w {
+            width: 100%;
+        }
+
+        .fill-h {
+            height: 100%;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .card {
+            margin: 24px;
+            padding: 16px;
+            color: var(--secondary-text-color);
+            border-radius: 5px;
+            background-color: var(--menu-background-color);
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        .circle {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            text-align: center;
+            color: var(--secondary-text-color);
+            border-radius: 50%;
+            background: var(--secondary-background-color);
+            font-size: 30px;
+            line-height: 64px;
+        }
+
+        h1 {
+            margin: 16px 0;
+            color: var(--primary-text-color);
+            font-size: 22px;
+        }
+    </style>
+</dom-module>

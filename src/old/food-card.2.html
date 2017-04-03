@@ -1,0 +1,118 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="food-card">
+    <style include="app-theme">
+        :host {
+            --show-food-card: inline-block;
+            display: var(--show-food-card);
+            --paper-icon-button: {
+                color: var(--primary-color);
+            }
+        }
+
+        paper-card {
+            margin: 12.5px;
+            width: 95%;
+            max-width: 300px;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        paper-input {
+            margin: 0px 25px;
+        }
+
+        paper-button {
+            margin-top: 15px;
+            font-size: initial;
+            display: inline-flex;
+        }
+    </style>
+    <template>
+        <firebase-document
+            path="/users/[[userId]]/cart/[[storeId]]/[[item.id]]"
+            data="{{quanta}}">
+        </firebase-document>
+        <paper-card image="./../images/food/[[item.id]].png">
+            <p>[[capitalize(item.id)]]: [[capitalize(item.description)]]</p>
+            <p>Category: [[capitalize(item.category)]]</p>
+            <p>[[item.quantity]] in stock per $[[item.price]] each</p>
+            <paper-input
+                auto-validate
+                prevent-invalid-input
+                label="Quantity to Buy"
+                error-message="We don't have that much stock!"
+                type="number"
+                min="0"
+                max="[[item.quantity]]"
+                value="{{quanta}}">
+                <template is="dom-if" if="[[store]]"><iron-icon icon="my-icons:add-to-cart" prefix></iron-icon></template>
+            </paper-input>
+            <template is="dom-if" if="[[cart]]">
+                <paper-button raised on-tap="nullifyQuanta">
+                    <iron-icon icon="my-icons:remove-from-cart"></iron-icon>Remove From Cart
+                </paper-button>
+            </template>
+        </paper-card>
+    </template>
+    <script>
+        Polymer({
+            is: 'food-card',
+            properties: {
+                quanta: {
+                    type: Number,
+                    value: 0
+                }
+            },
+            listeners: {
+                "change": "quantaChanged"
+            },
+            quantaChanged: function() {
+
+                if(this.cart && this.q === 0)
+                    this.customStyle['--show-food-card'] = 'none';
+                else
+                    this.customStyle['--show-food-card'] = 'inline-block';
+
+                if(this.item && parseInt(this.quanta, 10) >= this.item.quantity)
+                    this.set("quanta", this.item.quantity);
+                else this.set("quanta", 0);
+
+                if(this.quanta == "")
+                    this.set("quanta", 0);
+
+
+                this.updateStyles();
+                this.fire('foodQuantaChanged', {foodId: this.item.id});
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function(data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function(acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

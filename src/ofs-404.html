@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="ofs-404">
+    <style include="app-theme">
+         :host {
+            display: block;
+            padding: 10px 20px;
+        }
+    </style>
+    <template>
+        <!-- If deploying in a folder replace href="/" with the full path to your site.
+        Such as: href=="http://polymerelements.github.io/polymer-starter-kit"-->
+        <h1>Oops you hit a 404.
+            <a href="/" tabindex="-1">
+                <paper-button raised>Head back to home.</paper-button>
+            </a>
+        </h1>
+    </template>
+    <script>
+        Polymer({
+            is: 'ofs-404',
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function(data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function(acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

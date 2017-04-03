@@ -1,0 +1,976 @@
+<link rel="import" href="./../bower_components/polymer/polymer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="./../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="./../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="./../bower_components/app-route/app-location.html">
+<link rel="import" href="./../bower_components/app-route/app-route.html">
+<link rel="import" href="./../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="./../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="./../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="./../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="./../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./../bower_components/polymerfire/polymerfire.html">
+<!--<link rel="import" href="./../bower_components/login-fire/login-fire.html">-->
+<!--<link rel="import" href="">-->
+<link rel="import" href="./app-theme.html">
+<link rel="import" href="./my-icons.html">
+
+<!--
+TODO:
+    - Finalize Readme
+-->
+
+<dom-module id="ofs-app">
+    <template>
+        <style include="app-theme">
+            app-toolbar {
+                color: var(--menu-text-color);
+                background-color: var(--dark-primary-color);
+            }
+
+            app-toolbar paper-icon-button {
+                --paper-icon-button-ink-color: var(--menu-text-color);
+            }
+
+            .logButton {
+                height: 50%;
+            }
+        </style>
+            <!--name="organic-food-store"-->
+        <firebase-app
+            auth-domain="organic-food-store.firebaseapp.com"
+            database-url="https://organic-food-store.firebaseio.com/"
+            api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg">
+        </firebase-app>
+            <!--app-name="organic-food-store"-->
+            <!--status-known="{{userStatus}}"-->
+        <firebase-auth
+            id="auth"
+            user="{{user}}"
+            provider="google"
+            signed-in="{{loggedIn}}"
+            on-error="handleError">
+        </firebase-auth>
+            <!--app-name="organic-food-store"-->
+        <firebase-document
+            path="/users/{{user.uid}}"
+            data="{{userData}}">
+        </firebase-document>
+        <firebase-document
+            path="/stock"
+            data="{{latestStock}}">
+        </firebase-document>
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
+            <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
+                <app-toolbar>Menu</app-toolbar>
+                <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a class="linkNullify" name="home" href="/home" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Home
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="dashboard" href="/dashboard" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Dashboard
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="tracking" href="/tracking" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Tracking
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="store" href="/store" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Store
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="cart" href="/cart" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Cart
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="about" href="/about" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            About
+                        </paper-icon-item>
+                    </a>
+                </paper-menu>
+            </app-drawer>
+            <app-header-layout has-scrolling-region>
+                <app-header condenses reveals effects="waterfall">
+                    <app-toolbar>
+                        <a href="/{{backPage}}" class="linkNullify">
+                            <paper-icon-button icon="my-icons:arrow-back"></paper-icon-button>
+                        </a>
+                        <a href="/" class="linkNullify">
+                            <paper-icon-button icon="my-icons:menu"></paper-icon-button>
+                        </a>
+                        <div main-title>OFS Web Shop</div>
+                        <paper-button class="logButton" on-tap="handleLogin" raised>Sign In</paper-button>
+                        <paper-button class="logButton" on-tap="handleLogin" raised>Welcome, [[userObject.fname]]!</paper-button>
+                        <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+                    </app-toolbar>
+                </app-header>
+                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+                    <ofs-home name="home" udata="{{userObject}}"></ofs-home>
+                    <ofs-about name="about" udata="{{userObject}}"></ofs-about>
+                    <ofs-dashboard name="dashboard" udata="{{userObject}}"></ofs-dashboard>
+                    <ofs-store name="store" udata="{{userObject}}"></ofs-store>
+                    <ofs-cart name="cart" udata="{{userObject}}"></ofs-cart>
+                    <ofs-checkout name="checkout" udata="{{userObject}}"></ofs-checkout>
+                    <ofs-tracking name="tracking" udata="{{userObject}}"></ofs-tracking>
+                    <ofs-view404 name="view404" udata="{{userObject}}"></ofs-view404>
+                </iron-pages>
+                <paper-textarea label="Incoming Firebase Data" value="[[parsedData]]"></paper-textarea>
+            </app-header-layout>
+        </app-drawer-layout>
+        <!--<paper-dialog id="loginDialog" with-backdrop center>
+            <paper-dialog-scrollable>
+                <login-fire debug google app-name="organic-food-store" user="{{user}}" signed-in="{{signedIn}}"></login-fire>
+            </paper-dialog-scrollable>
+        </paper-dialog>-->
+    </template>
+    <script>
+        var pol = Polymer({
+            is: 'ofs-app',
+            properties: {
+                userObject: {
+                    type: Object,
+                    notify: true,
+                    computed: 'maintainUserObj(user, loggedIn)',
+                    observer: 'maintainUserObjCall'
+                }, page: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged'
+                }, backPage: {
+                    type: String,
+                    computed: '_goBack(page)'
+                }, responsiveWidth: {
+                    type: Number,
+                    value: 2000
+                }, currentWidth: {
+                    type: Number,
+                    notify: true
+                }, drawerAlign: {
+                    type: String,
+                    computed: "_getDrawerAlignment(currentWidth)"
+                }, parsedData: {
+                    type: String,
+                    computed: 'parseJson(latestStock)'
+                }
+            },
+            listeners: {
+                'iron-resize': '_setWidth'
+            },
+            observers: ['_routePageChanged(routeData.page)'],
+            maintainUserObjCall: function() {
+                this.maintainUserObj(this.user, this.loggedIn);
+            },
+            maintainUserObj: function (obj, loggedin) {
+                //Maintain User Object State
+                console.log("this.userObject");
+                console.log(this.userObject);
+                console.log("this.userData");
+                console.log(this.userData);
+                console.log("obj");
+                console.log(obj);
+                console.log("obj.uid");
+                console.log(obj.uid);
+                console.log("loggedin");
+                console.log(loggedin);
+
+                var temp = this.userObject;
+
+                if(!this.userObject) {
+                    temp = {};
+                    temp.zipcode = "";
+                    temp.storeId = "";
+                    temp.lname = "";
+                    temp.fname = "Customer";
+                    temp.email = "";
+                    temp.address = "";
+                    temp.cart = "";
+                }
+                if(!loggedin) {
+
+                }
+                this.set("userData.fname", obj.displayName.split(' ')[0]);
+                this.set("userData.lname", obj.displayName.split(' ')[obj.displayName.split(' ').length-1]);
+                this.set("userData.email", obj.email);
+                this.set("userData.photo", obj.photoURL);
+                this.set("userData.id", obj.uid);
+                return temp;
+            },
+            handleLogin: function () {
+                if(!this.user) {
+                    console.log("Logging in...");
+                    this.$.auth.signInWithPopup();
+                } else {
+                    console.log("Logging out...");
+                    this.$.auth.signOut();
+                }
+            },
+            handleError: function (event) {
+                console.log(event);
+            },
+            parseJson: function (item) {
+                return JSON.stringify(item, null, 4);
+            },
+            _setWidth: function() {
+                this.set('currentWidth', this.$$("app-drawer-layout").clientWidth);
+            },
+            _goBack: function (page) {
+                var order = ["home ", "dashboard ", "about", "home", "dashboard", "tracking", "home ", "dashboard ", "store", "cart", "checkout"];
+                return order[order.indexOf(page)-1];
+            },
+            _getDrawerAlignment: function(width) {
+                return this.responsiveWidth > width ? "right" : "left";
+            },
+            _routePageChanged: function (page) {
+                this.page = page || 'home';
+                if (!this.$.drawer.persistent)
+                    this.$.drawer.close();
+            },
+            _pageChanged: function (page) {
+                var resolvedPageUrl = this.resolveUrl('ofs-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this._showPage404, true);
+            },
+            _showPage404: function () {
+                this.page = 'view404';
+            },
+        });
+        function openLoginDialog() {
+            // console.log(document.querySelector('#loginDialog'));
+            document.querySelector('ofs-app::shadow #loginDialog').open()
+        }
+    </script>
+</dom-module>
+
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+
+<link rel="import" href="./../bower_components/polymer/polymer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="./../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="./../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="./../bower_components/app-route/app-location.html">
+<link rel="import" href="./../bower_components/app-route/app-route.html">
+<link rel="import" href="./../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="./../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="./../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="./../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="./../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./../bower_components/polymerfire/polymerfire.html">
+<!--<link rel="import" href="">-->
+<link rel="import" href="./app-theme.html">
+<link rel="import" href="./my-icons.html">
+
+<!--
+TODO:
+    - Finalize Readme
+    - Add a cart for each store
+    - Get an address validator
+    - Replace cZip with direct reference to UserObject that can change firebase zip data
+    - Handle Response of getting the closest store
+-->
+
+<dom-module id="ofs-app">
+    <template>
+        <style include="app-theme">
+            app-toolbar {
+                color: var(--menu-text-color);
+                background-color: var(--dark-primary-color);
+            }
+
+            app-toolbar paper-icon-button {
+                --paper-icon-button-ink-color: var(--menu-text-color);
+            }
+
+            .loggingButton {
+                height: 32px; /*50%;*/
+            }
+        </style>
+        <firebase-app
+            auth-domain="organic-food-store.firebaseapp.com"
+            database-url="https://organic-food-store.firebaseio.com/"
+            api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg">
+        </firebase-app>
+            <!--status-known="{{userStatus}}"-->
+        <firebase-auth
+            id="auth"
+            user="{{user}}"
+            provider="google"
+            signed-in="{{loggedIn}}"
+            on-error="handleError">
+        </firebase-auth>
+        <firebase-document
+            path="/users/{{user.uid}}"
+            data="{{userData}}">
+        </firebase-document>
+        <firebase-document
+            path="/stock"
+            data="{{latestStock}}">
+        </firebase-document>
+        <iron-ajax auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
+        <!--<iron-ajax auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax> Handle Response of getting the closest store-->
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
+            <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
+                <app-toolbar>Menu</app-toolbar>
+                <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a class="linkNullify" name="home" href="/home" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Home
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="dashboard" href="/dashboard" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Dashboard
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="tracking" href="/tracking" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Tracking
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="store" href="/store" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Store
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="cart" href="/cart" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Cart
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="about" href="/about" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            About
+                        </paper-icon-item>
+                    </a>
+                </paper-menu>
+            </app-drawer>
+            <app-header-layout has-scrolling-region>
+                <app-header condenses reveals effects="waterfall">
+                    <app-toolbar>
+                        <a href="/{{backPage}}" class="linkNullify">
+                            <paper-icon-button icon="my-icons:arrow-back"></paper-icon-button>
+                        </a>
+                        <a href="/" class="linkNullify">
+                            <paper-icon-button icon="my-icons:menu"></paper-icon-button>
+                        </a>
+                        <div main-title>OFS Web Shop - [[capitalize(page)]]</div>
+                        <paper-button class="loggingButton" on-tap="handleLogin" raised>[[userAction]]</paper-button>
+                        <a href="/dashboard" class="linkNullify">
+                            <paper-button class="loggingButton" raised>
+                                Welcome, [[userData.name]]!
+                                Welcome, [[userObject.fname]]!
+                            </paper-button>
+                        </a>
+                        <!--<paper-button class="loggingButton" on-tap="handleLogin" raised>Sign In</paper-button>
+                        <paper-button class="loggingButton" on-tap="handleLogin" raised>Welcome, [[userObject.fname]]!</paper-button>-->
+                        <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+                    </app-toolbar>
+                </app-header>
+                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+                    <ofs-home name="home" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-home>
+                    <ofs-about name="about" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-about>
+                    <ofs-dashboard name="dashboard" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-dashboard>
+                    <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
+                    <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-cart>
+                    <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-checkout>
+                    <ofs-tracking name="tracking" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
+                    <ofs-view404 name="view404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-view404>
+                </iron-pages>
+                <paper-textarea label="Incoming Firebase Data" value="[[parsedData]]"></paper-textarea>
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+    <script>
+        var pol = Polymer({
+            is: 'ofs-app',
+            properties: {
+                // userObject: {
+                //     type: Object,
+                //     notify: true,
+                //     computed: 'maintainUserObj(user, loggedIn)',
+                //     observer: 'updateUserDatafromUserObject'
+                // },
+                // userData: {
+                //     type: Object,
+                //     notify: true,
+                //     observer: 'updateUserObjectfromUserData'
+                // },
+                userAction: {
+                    type: String,
+                    notify: true,
+                    computed: 'getUserAction(user, user.uid, loggedIn)'
+                }, page: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: 'pageChanged'
+                }, backPage: {
+                    type: String,
+                    computed: 'goBack(page)'
+                }, responsiveWidth: {
+                    type: Number,
+                    value: 2000
+                }, currentWidth: {
+                    type: Number,
+                    notify: true
+                }, drawerAlign: {
+                    type: String,
+                    computed: "getDrawerAlignment(currentWidth)"
+                }, parsedData: {
+                    type: String,
+                    computed: 'parseJson(userData, latestStock)'
+                },
+            },
+            listeners: {
+                'iron-resize': 'setWidth',
+                'response': 'handleResponse'
+            },
+            observers: ['routePageChanged(routeData.page)'],
+            getUserAction: function (obj, id, loggedin) {
+                console.log(obj);
+                console.log(id);
+                console.log(loggedin);
+                if(!loggedin)
+                    return "Sign In";
+                this.set("userData.name", obj.displayName);
+                this.set("userData.email", obj.email);
+                this.set("userData.photo", obj.photoURL);
+                return "Sign Out";
+            },
+            handleLogin: function () {
+                if(!this.user) {
+                    console.log("Logging in...");
+                    // this.set("user", "sw4FB1j66FcjCAp7OvlaylDTlub2");
+                    //Call updateUserDatafromUserObject
+                    this.$.auth.signInWithPopup();
+                } else {
+                    console.log("Logging out...");
+                    // this.set("user", "");
+                    //Call updateUserDatafromUserObject
+                    this.$.auth.signOut();
+                }
+            },
+            handleError: function (event) {
+                console.log(event);
+            },
+            updateUserObjectfromUserData: function () {
+                //Check Conditionals, etc
+                this.set("this.userObject", this.userData);
+            },
+            updateUserDatafromUserObject: function () {
+                //Check Conditionals, etc
+                this.set("this.userData", this.userObject);
+            },
+            maintainUserObj: function (obj, loggedin) {
+                //Maintain User Object State
+                console.log("this.userObject");
+                console.log(this.userObject);
+                console.log("this.userData");
+                console.log(this.userData);
+                console.log("obj");
+                console.log(obj);
+                console.log("obj.uid");
+                console.log(obj.uid);
+                console.log("loggedin");
+                console.log(loggedin);
+
+                var temp = this.userObject;
+
+                if(!this.userObject) {
+                    temp = {};
+                    temp.zipcode = "";
+                    temp.storeId = "";
+                    temp.lname = "";
+                    temp.fname = "Customer";
+                    temp.email = "";
+                    temp.address = "";
+                    temp.cart = "";
+                }
+
+                if(!loggedin) {
+
+                }
+
+                //Replace Firebase Address with userObject Address, unless empty
+                //Replace Firebase Email with userObject Email, unless empty
+                //Replace Firebase fname with userObject fname, unless Customer or empty
+                //Replace Firebase lname with userObject lname, unless empty
+                //Replace orderHistory with lesser objects; basically do a shallow merge
+                //Replace paymentMethods with lesser objects; basically do a shallow merge
+                //Replace zipcode with whiever has priority
+
+                //First check which object's value is empty, then check which object has priority, then
+
+                //replace all the bottom ones with temp values.
+                this.set("userData.fname", obj.displayName.split(' ')[0]);
+                this.set("userData.lname", obj.displayName.split(' ').length > 1 ? obj.displayName.split(' ')[obj.displayName.split(' ').length-1] : "");
+                this.set("userData.email", obj.email);
+                this.set("userData.photo", obj.photoURL);
+                this.set("userData.id", obj.uid);
+                return temp;
+            },
+            getEquality: function (data, obj) {
+                var equal = true;
+
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            },
+            handleResponse: function () {
+                // console.log("95014 Lat Lng: "+this.zipsJsonData["95014"].LAT+", "+this.zipsJsonData["95014"].LNG);
+            },
+            capitalize: function (string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            },
+            setWidth: function () {
+                this.set('currentWidth', this.$$("app-drawer-layout").clientWidth);
+            },
+            goBack: function (page) {
+                var order = ["home ", "dashboard ", "about", "home", "dashboard", "tracking", "home ", "dashboard ", "store", "cart", "checkout"];
+                return order[order.indexOf(page)-1];
+            },
+            getDrawerAlignment: function (width) {
+                return this.responsiveWidth > width ? "right" : "left";
+            },
+            routePageChanged: function (page) {
+                this.page = page || 'home';
+                if (!this.$.drawer.persistent)
+                    this.$.drawer.close();
+            },
+            pageChanged: function (page) {
+                var resolvedPageUrl = this.resolveUrl('ofs-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this.showPage404, true);
+            },
+            showPage404: function () {
+                this.page = 'view404';
+            },
+        });
+    </script>
+</dom-module>
+
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+======================================================================================================================
+
+<link rel="import" href="./../bower_components/polymer/polymer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="./../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="./../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="./../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="./../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="./../bower_components/app-route/app-location.html">
+<link rel="import" href="./../bower_components/app-route/app-route.html">
+<link rel="import" href="./../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="./../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="./../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="./../bower_components/paper-input/paper-input.html">
+<link rel="import" href="./../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="./../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="./../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="./../bower_components/paper-card/paper-card.html">
+<!--<link rel="import" href="">-->
+<link rel="import" href="./../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="./app-theme.html">
+<link rel="import" href="./my-icons.html">
+<link rel="import" href="./food-card.html">
+<link rel="import" href="./food-grid.html">
+
+<!--
+TODO:
+    - Finalize Readme
+    - Add a cart for each store
+    - Get an address validator
+    - Replace cZip with direct reference to UserObject that can change firebase zip data
+    - Handle Response of getting the closest store
+-->
+
+<dom-module id="ofs-app">
+    <template>
+        <style include="app-theme">
+            app-toolbar {
+                color: var(--menu-text-color);
+                background-color: var(--dark-primary-color);
+            }
+
+            app-toolbar paper-icon-button {
+                --paper-icon-button-ink-color: var(--menu-text-color);
+            }
+
+            .loggingButton {
+                height: 32px; /*50%;*/
+            }
+        </style>
+        <firebase-app
+            auth-domain="organic-food-store.firebaseapp.com"
+            database-url="https://organic-food-store.firebaseio.com/"
+            api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg">
+        </firebase-app>
+        <firebase-auth
+            id="auth"
+            user="{{user}}"
+            provider="google"
+            signed-in="{{loggedIn}}"
+            status-known="{{userStatus}}"
+            on-error="handleError">
+        </firebase-auth>
+        <firebase-document
+            path="/users/{{user.uid}}"
+            data="{{userData}}">
+        </firebase-document>
+        <firebase-document
+            path="/stock"
+            data="{{latestStock}}">
+        </firebase-document>
+        <firebase-document
+            path="/stores"
+            data="{{storeKeys}}">
+        </firebase-document>
+        <iron-ajax auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
+        <iron-ajax auto url="https://organic-food-store.herokuapp.com/api/userExists/[[user.uid]]" handle-as="json" last-response="{{userExists}}"></iron-ajax>
+        <!--<iron-ajax auto url="https://organic-food-store.herokuapp.com/api/zipToCords/[[userData.zipcode]]" handle-as="json" last-response="{{userData.coords}}"></iron-ajax>-->
+        <iron-ajax auto url="https://organic-food-store.herokuapp.com/api/closestStore/[[userData.zipcode]]" handle-as="json" last-response="{{closestStoreId}}"></iron-ajax> <!--Handle Response of getting the closest store-->
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
+            <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
+                <app-toolbar>Menu</app-toolbar>
+                <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a class="linkNullify" name="home" href="/home" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Home
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="dashboard" href="/dashboard" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Dashboard
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="tracking" href="/tracking" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Tracking
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="store" href="/store" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Store
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="cart" href="/cart" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            Cart
+                        </paper-icon-item>
+                    </a>
+                    <a class="linkNullify" name="about" href="/about" tabindex="-1">
+                        <paper-icon-item>
+                            <iron-icon icon="menu" item-icon></iron-icon>
+                            About
+                        </paper-icon-item>
+                    </a>
+                </paper-menu>
+            </app-drawer>
+            <app-header-layout has-scrolling-region>
+                <app-header condenses reveals effects="waterfall">
+                    <app-toolbar>
+                        <a href="/{{backPage}}" class="linkNullify">
+                            <paper-icon-button icon="my-icons:arrow-back"></paper-icon-button>
+                        </a>
+                        <a href="/" class="linkNullify">
+                            <paper-icon-button icon="my-icons:menu"></paper-icon-button>
+                        </a>
+                        <div main-title>OFS Web Shop - [[capitalize(page)]]</div>
+                        <paper-button class="loggingButton" on-tap="handleLogin" raised>[[userAction]]</paper-button>
+                        <template is="dom-if" if="[[userData.fname]]">
+                            <a href="/dashboard" class="linkNullify">
+                                <paper-button class="loggingButton" raised>
+                                    Welcome, [[userData.fname]]!
+                                </paper-button>
+                            </a>
+                        </template>
+                        <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+                    </app-toolbar>
+                </app-header>
+                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+                    <ofs-home name="home" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-home>
+                    <ofs-about name="about" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-about>
+                    <ofs-dashboard name="dashboard" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-dashboard>
+                    <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
+                    <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-cart>
+                    <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-checkout>
+                    <ofs-tracking name="tracking" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
+                    <ofs-view404 name="view404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-view404>
+                </iron-pages>
+                <paper-textarea label="Current Zip" value="{{userData.zipcode}}"></paper-textarea>
+                <!--<paper-textarea label="Incoming Firebase Data" value="[[parsedData]]"></paper-textarea>-->
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+    <script>
+        var pol = Polymer({
+            is: 'ofs-app',
+            properties: {
+                userData: {
+                    type: Object,
+                    notify: true,
+                    // reflectToAttribute: true,
+                    // value: function() {
+                    //     return {
+                    //         "zipcode": "95014",
+                    //         "storeId": "",
+                    //         "cart": { "94401": { "apple": 34, "artichoke": 0, "asparagus": 0, "avocado": 0, "bacon": 0, "banana": 0, "bellPepper": 0, "broccoli": 0, "butter": 0, "carrot": 0, "cheese": 0, "chicken": 0, "chickenWing": 0, "cod": 0, "crab": 0, "eggplant": 0, "groundBeef": 0, "iceCream": 0, "kale": 0, "kiwi": 0, "lamb": 0, "lemon": 0, "lobster": 0, "milk": 0, "octopus": 0, "orange": 0, "oyster": 0, "porkChop": 0, "potato": 0, "prawn": 0, "raspberry": 0, "salmon": 0, "sausage": 0, "scallop": 0, "steak": 0, "strawberry": 0, "tomato": 0, "watermelon": 0, "yogurt": 0, "zucchini": 0 }, "95125": { "apple": 0, "artichoke": 0, "asparagus": 0, "avocado": 0, "bacon": 0, "banana": 0, "bellPepper": 0, "broccoli": 0, "butter": 0, "carrot": 0, "cheese": 0, "chicken": 0, "chickenWing": 0, "cod": 0, "crab": 0, "eggplant": 0, "groundBeef": 0, "iceCream": 0, "kale": 0, "kiwi": 0, "lamb": 0, "lemon": 0, "lobster": 0, "milk": 0, "octopus": 0, "orange": 0, "oyster": 0, "porkChop": 0, "potato": 0, "prawn": 0, "raspberry": 0, "salmon": 0, "sausage": 0, "scallop": 0, "steak": 0, "strawberry": 0, "tomato": 0, "watermelon": 0, "yogurt": 0, "zucchini": 0 }, "storeId": { "apple": 0, "artichoke": 0, "asparagus": 0, "avocado": 0, "bacon": 0, "banana": 0, "bellPepper": 0, "broccoli": 0, "butter": 0, "carrot": 0, "cheese": 0, "chicken": 0, "chickenWing": 0, "cod": 0, "crab": 0, "eggplant": 0, "groundBeef": 0, "iceCream": 0, "kale": 0, "kiwi": 0, "lamb": 0, "lemon": 0, "lobster": 0, "milk": 0, "octopus": 0, "orange": 0, "oyster": 0, "porkChop": 0, "potato": 0, "prawn": 0, "raspberry": 0, "salmon": 0, "sausage": 0, "scallop": 0, "steak": 0, "strawberry": 0, "tomato": 0, "watermelon": 0, "yogurt": 0, "zucchini": 0 }, "storeId2": { "apple": 0, "artichoke": 0, "asparagus": 0, "avocado": 0, "bacon": 0, "banana": 0, "bellPepper": 0, "broccoli": 0, "butter": 0, "carrot": 0, "cheese": 0, "chicken": 0, "chickenWing": 0, "cod": 0, "crab": 0, "eggplant": 0, "groundBeef": 0, "iceCream": 0, "kale": 0, "kiwi": 0, "lamb": 0, "lemon": 0, "lobster": 0, "milk": 0, "octopus": 0, "orange": 0, "oyster": 0, "porkChop": 0, "potato": 0, "prawn": 0, "raspberry": 0, "salmon": 0, "sausage": 0, "scallop": 0, "steak": 0, "strawberry": 0, "tomato": 0, "watermelon": 0, "yogurt": 0, "zucchini": 0 } }
+                    //     };
+                    // }
+                }, userDataBackup: {
+                    type: Object,
+                    value: this.userData
+                }, userAction: {
+                    type: String,
+                    notify: true,
+                    computed: 'getUserAction(user, loggedIn, userStatus)'
+                }, latestStores: {
+                    type: Array,
+                    notify: true,
+                    computed: 'getObjectKeys(storeKeys)'
+                }, page: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: 'pageChanged'
+                }, backPage: {
+                    type: String,
+                    computed: 'goBack(page)'
+                }, responsiveWidth: {
+                    type: Number,
+                    value: 2000
+                }, currentWidth: {
+                    type: Number,
+                    notify: true
+                }, drawerAlign: {
+                    type: String,
+                    computed: "getDrawerAlignment(currentWidth)"
+                }, parsedData: {
+                    type: String,
+                    computed: 'parseJson(user, userData, latestStores, latestStock)'
+                },
+            },
+            listeners: {
+                'iron-resize': 'setWidth',
+                'response': 'handleResponse'
+            },
+            observers: ['routePageChanged(routeData.page)', 'userDataChanged(userData.*)'],
+            ready: function() {
+                // this.$.auth.signInAnonymously();
+            },
+            getUserAction: function (user, loggedIn, status) {
+                console.log("====================================================");
+                console.log("user");
+                console.log(user);
+                console.log("loggedIn");
+                console.log(loggedIn);
+                console.log("status");
+                console.log(status);
+                console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                if(loggedIn)
+                    return "Sign Out";
+                return "Sign In";
+            },
+            handleLogin: function () {
+                if(!this.user) {
+                    console.log("Logging in...");
+                    this.$.auth.signInWithPopup();
+                } else {
+                    console.log("Logging out...");
+                    this.$.auth.signOut();
+                    location.reload();
+                }
+            },
+            setUpNewUser: function (exists, user, stores, stock) {
+                if(exists && this.user && !exists.exists) {
+                    console.log("Gotta Add "+this.user.uid+"! Creating new User...");
+                    temp = {};
+                    temp.id = user.uid;
+                    temp.email = user.email;
+                    temp.photo = user.photoURL;
+                    temp.fname = user.displayName.split(' ')[0];
+                    temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length-1] : "";
+                    temp.address = "";
+                    temp.zipcode = "";
+                    temp.storeId = "";
+                    temp.cart = {};
+                    for(var store in stores) {
+                        temp.cart[stores[store]] = {};
+                        for(var food in stock)
+                            temp.cart[stores[store]][stock[food]] = "0";
+                    }
+                    temp.orderHistory = [];
+                    temp.paymentMethods = [];
+                    this.set("userData", temp);
+                }
+            },
+            setNewStore: function (closestId) {
+                if(closestId)
+                    this.set("userData.storeId", closestId.storeId);
+            },
+            userDataChanged: function(changeRecord) {
+                console.log(changeRecord.path+': ' + this.parseJson(changeRecord.value));
+                this.set(changeRecord.path, changeRecord.value);
+                this.set("userDataBackup", this.userData);
+            },
+            // getEmptyCart: function() {
+            //     console.log("Wow cart");
+            //     return {};
+            // },
+            handleResponse: function (event) {
+                // console.log("New Response!");
+                // console.log(event);
+                this.setUpNewUser(this.userExists, this.user, this.latestStores, this.latestStock);
+                this.setNewStore(this.closestStoreId);
+            },
+            handleError: function (event) {
+                console.log(event);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            },
+            getObjectKeys: function (obj) {
+                return Object.keys(obj);
+            },
+            getObjectValues: function (obj) {
+                return Object.values(obj);
+            },
+            capitalize: function (string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            },
+            setWidth: function () {
+                this.set('currentWidth', this.$$("app-drawer-layout").clientWidth);
+            },
+            goBack: function (page) {
+                var order = ["home ", "dashboard ", "about", "home", "dashboard", "tracking", "home ", "dashboard ", "store", "cart", "checkout"];
+                return order[order.indexOf(page)-1];
+            },
+            getDrawerAlignment: function (width) {
+                return this.responsiveWidth > width ? "right" : "left";
+            },
+            routePageChanged: function (page) {
+                this.page = page || 'home';
+                if (!this.$.drawer.persistent)
+                    this.$.drawer.close();
+            },
+            pageChanged: function (page) {
+                var resolvedPageUrl = this.resolveUrl('ofs-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this.showPage404, true);
+            },
+            showPage404: function () {
+                this.page = 'view404';
+            },
+        });
+    </script>
+</dom-module>

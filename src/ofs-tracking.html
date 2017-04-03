@@ -1,0 +1,119 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="ofs-tracking">
+    <style include="app-theme">
+         :host {
+            display: block;
+            padding: 10px;
+        }
+    </style>
+    <template>
+        <iron-location hash="{{selectedOrderId}}"></iron-location>
+        <paper-input id="trackingIdInput" label="Enter Tracking ID" type="number" raised value="{{selectedOrderId}}"></paper-input>
+        <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px"
+            latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]">
+            <google-map-marker title="Your Location" latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]" icon="./../images/pins/homePin.png">
+                <p>Your Location</p>
+            </google-map-marker>
+            <template is="dom-if" if="{{badOrder(selectedOrderId)}}" restamp>
+                <google-map-marker title="San Mateo Downtown Branch @ 198 Baldwin Ave" icon="./../images/pins/storePin.png" latitude="[[zdata.94401.LAT]]"
+                    longitude="[[zdata.94401.LNG]]">
+                    <p>San Mateo Downtown Branch @ 198 Baldwin Ave</p>
+                </google-map-marker>
+                <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png"
+                    latitude="[[zdata.95125.LAT]]" longitude="[[zdata.95125.LNG]]">
+                    <p>San Jose Willow Glen Branch @ 1092 Cherry Ave</p>
+                </google-map-marker>
+            </template>
+            <template is="dom-if" if="{{selectedOrderId}}" restamp>
+                <google-map-marker title="Order# orderId shipping drone location" icon="./../images/pins/dronePin.png"
+                    latitude="[[zdata.95117.LAT]]" longitude="[[zdata.95117.LNG]]">
+                    <p>Order# orderId shipping drone location</p>
+                </google-map-marker>
+                <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png"
+                    latitude="[[udata.storelat]]" longitude="[[udata.storelng]]">
+                    <p>San Jose Willow Glen Branch @ 1092 Cherry Ave</p>
+                </google-map-marker>
+            </template>
+        </google-map>
+        <!--<paper-textarea label="Tracking Data" value="[[parseJson(selectedOrderId)]]"></paper-textarea>-->
+    </template>
+    <script>
+        Polymer({
+            is: 'ofs-tracking',
+            properties: {
+                h: {
+                    observer: "getHeight"
+                },
+                height: {
+                    type: Number,
+                    notify: true,
+                    value: 0
+                },
+                mapZoom: {
+                    type: Number,
+                    notify: true,
+                    value: 9
+                },
+                selectedOrderId: {
+                    notify: true,
+                    observer: "updateMap"
+                }
+            },
+            observers: ["turnOnFitToMarkers(udata.*, zdata.*)"],
+            listeners: {
+                "google-map-marker-close": "updateMap"
+            },
+            ready: function () {
+                this.getHeight(this.h - 20);
+            },
+            getHeight: function (h) {
+                this.set("height", h - this.$.trackingIdInput.clientHeight - 84);
+            },
+            getULat: function (u) {
+                return u.addrlat ? u.addrlat : u.ziplat ? u.ziplat : "";
+            },
+            getULng: function (u) {
+                return u.addrlng ? u.addrlng : u.ziplng ? u.ziplng : "";
+            },
+            turnOnFitToMarkers: function () {
+                if (this.zdata && this.udata.ziplat && this.udata.ziplng && this.udata.storelat && this.udata.storelng)
+                    this.$.gmap.fitToMarkers = true;
+            },
+            updateMap: function () {
+                this.$.gmap.resize();
+            },
+            badOrder: function (orderId) {
+                return !(orderId);
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function (data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function (acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function (acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

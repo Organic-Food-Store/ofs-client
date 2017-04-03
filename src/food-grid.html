@@ -1,0 +1,227 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="food-grid">
+    <style include="app-theme">
+         :host {
+            display: block;
+        }
+
+        #grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #search {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        #search iron-icon {
+            margin-right: 5px;
+        }
+
+        .filteredWidth {
+            margin: auto;
+            min-width: 230px;
+        }
+
+        paper-tabs {
+            margin-top: 0px;
+            margin-bottom: 12.5px;
+            --paper-icon-button: {
+                color: var(--alt-accent-color);
+                background-color: var(--accent-color);
+                border-radius: 50%;
+            }
+        }
+    </style>
+    <template>
+        <firebase-document path="/categories" data="{{latestCategories}}"> </firebase-document>
+        <firebase-document path="/stores/[[udata.storeId]]/stock" data="{{stockData}}"> </firebase-document>
+        <template is="dom-if" if="[[show(store, count, userCartQuanta)]]">
+            <a href="/cart" tabindex="-1">
+                <paper-button class="filteredWidth" raised style="width: [[filterWidth]]px;">
+                    <iron-icon icon="my-icons:cart"></iron-icon>
+                    Proceed to Cart
+                </paper-button>
+            </a>
+            <!--<paper-fab-expand main-icon="question-answer" hovrd="[[fabHovering]]" curr-notifs="[[totalFabNotfs]]"></paper-fab-expand>-->
+        </template>
+        <template is="dom-if" if="[[store]]">
+            <paper-input id="search" class="filteredWidth" autocorrect="off" label="Search" value="{{search}}" style="width: [[filterWidth]]px;">
+                <iron-icon icon="my-icons:search" prefix></iron-icon>
+            </paper-input>
+            <paper-tabs selected="{{menuSelect}}" scrollable fit-container>
+                <paper-tab>All</paper-tab>
+                <template is="dom-repeat" items="[[getObjectValues(latestCategories)]]">
+                    <paper-tab>[[capitalize(item)]]</paper-tab>
+                </template>
+            </paper-tabs>
+        </template>
+        <div id="grid">
+            <template id="rGrid" is="dom-repeat" items="[[getObjectValues(stockData)]]" filter="matchesFilters">
+                <food-card
+                    id="food[[item.id]]"
+                    store="[[store]]"
+                    cart="[[cart]]"
+                    item="[[item]]"
+                    user-id="[[udata.id]]"
+                    store-id="[[udata.storeId]]"></food-card>
+            </template>
+        </div>
+        <template is="dom-if" if="[[emptyView(count, userCartQuanta, cart, store)]]">
+            <template is="dom-if" if="[[store]]">
+                <h4 class="center">
+                    <b>Your Stock Selection is Empty!</b><br>Select a different store:<br><br><menu-select store></menu-select><br><br>Or change your:<br><b>Search Query Keywords</b>
+                </h4><br>
+            </template>
+            <template
+                is="dom-if" if="[[cart]]">
+                <h4 class="center">
+                    <b>Your Cart is Empty!</b><br>Add items to your cart here:<br>
+                </h4>
+                <a name="cart" href="/store" tabindex="-1">
+                    <paper-button raised>
+                        <iron-icon icon="my-icons:store"></iron-icon>Store
+                    </paper-button>
+                </a><br>
+            </template>
+        </template>
+        <template is="dom-if" if="[[show(cart, count, userCartQuanta)]]">
+            <total-price cart user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+            <a href="/checkout" tabindex="-1">
+                <paper-button raised style="margin-top: 14.5px;">
+                    <iron-icon icon="my-icons:checkout"></iron-icon>Proceed to Checkout
+                </paper-button>
+            </a>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            is: 'food-grid',
+            properties: {
+                stockData: {
+                    type: Object,
+                    observer: 'refreshGrid'
+                },
+                count: {
+                    type: Number,
+                    notify: true,
+                    value: 0
+                },
+                userCartQuanta: {
+                    type: Number,
+                    notify: true,
+                    computed: 'cartRefresh(udata.cart, udata.storeId)'
+                },
+                store: {
+                    type: Boolean,
+                    notify: true,
+                    value: false,
+                    observer: 'refreshGrid'
+                },
+                cart: {
+                    type: Boolean,
+                    notify: true,
+                    value: false,
+                    observer: 'refreshGrid'
+                },
+                category: {
+                    type: String,
+                    notify: true,
+                    computed: "getCurrentCategory(menuSelect, latestCategories)",
+                    observer: 'refreshGrid'
+                },
+                menuSelect: {
+                    type: Number,
+                    value: 0,
+                    notify: true,
+                    observer: 'refreshGrid'
+                },
+                search: {
+                    type: String,
+                    value: "",
+                    notify: true,
+                    observer: 'refreshGrid'
+                },
+                filterWidth: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                }
+            },
+            behaviors: [
+                Polymer.IronResizableBehavior
+            ],
+            listeners: {
+                'iron-resize': 'getTabsWidth'
+            },
+            attached: function () {
+                if (this.$$("paper-tabs")) this.set("filterWidth", this.$$("paper-tabs").clientWidth - 137);
+                this.async(this.notifyResize, 1);
+            },
+            getTabsWidth: function () {
+                if (this.$$("paper-tabs")) this.set("filterWidth", this.$$("paper-tabs").clientWidth - 112);
+            },
+            show: function (view, count, cartCount) {
+                if(view && this.cart)
+                    return count > 0 && cartCount > 0;
+                if(view && this.store)
+                    return cartCount > 0;
+            },
+            emptyView: function (count, cartCount, c, s) {
+                return c ? count == 0 || cartCount == 0 : (s ? count == 0 : false);
+            },
+            getCurrentCategory: function (m, c) {
+                if (m == 0) return "all";
+                return c[m - 1];
+            },
+            cartRefresh: function (data, id) {
+                return getObjectValues(data[id]).reduce((a, b) => isInt(b) ? a + parseInt(b) : 0, 0);
+            },
+            refreshGrid: function (data) {
+                log("=============================GRID REFRESH============================");
+                this.$.rGrid.render();
+                this.set("count", this.$.rGrid.renderedItemCount);
+                log("Food Grid Item Count - this.count");
+                log(this.count);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            },
+            matchesFilters: function (item) {
+                var show = true;
+                if (this.category != "all") show = (item.category == this.category);
+                if (show && this.search != "") show = (item.id + item.description + item.category).toLowerCase().indexOf(this.search) >= 0;
+                return show && (item.quantity) > 0;
+            },
+            capitalize: function (str) {
+                return capitalize(str);
+            },
+            getObjectKeys: function (items) {
+                return getObjectKeys(items);
+            },
+            getObjectValues: function (items) {
+                return getObjectValues(items);
+            },
+            isInt: function (value) {
+                return isInt(value);
+            },
+            flattenJson: function(data) {
+                return flattenJson(data);
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function(acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
+            }
+        });
+
+        function parseJson() {
+            var items = [].slice.apply(arguments);
+            return items.reduce(function(acc, item) {
+                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+            }, "");
+        }
+    </script>
+</dom-module>

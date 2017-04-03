@@ -1,0 +1,23 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/ofs-app.html",
+    "fragments": [
+        "src/ofs-home.html",
+        "src/ofs-dashboard.html",
+        "src/ofs-about.html",
+        "src/ofs-store.html",
+        "src/ofs-cart.html",
+        "src/ofs-checkout.html",
+        "src/ofs-tracking.html",
+        "src/ofs-404.html"
+    ],
+    "sourceGlobs": [
+        "src/**/*",
+        "images/**/*",
+        "bower.json"
+    ],
+    "includeDependencies": [
+        "manifest.json",
+        "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+    ]
+}
