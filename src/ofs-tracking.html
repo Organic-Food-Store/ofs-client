@@ -8,35 +8,29 @@
         }
     </style>
     <template>
+        <firebase-document path="/stores" data="{{storeData}}"></firebase-document>
+        <firebase-document path="/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>
+        <!--<firebase-document path="/orders/[[selectedOrderId]]" data="{{orderUserId}}"></firebase-document>-->
+        <!--<firebase-document path="/users/[[orderUserId]]/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>-->
         <iron-location hash="{{selectedOrderId}}"></iron-location>
         <paper-input id="trackingIdInput" label="Enter Tracking ID" type="number" raised value="{{selectedOrderId}}"></paper-input>
-        <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px"
-            latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]">
-            <google-map-marker title="Your Location" latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]" icon="./../images/pins/homePin.png">
-                <p>Your Location</p>
-            </google-map-marker>
-            <template is="dom-if" if="{{badOrder(selectedOrderId)}}" restamp>
-                <google-map-marker title="San Mateo Downtown Branch @ 198 Baldwin Ave" icon="./../images/pins/storePin.png" latitude="[[zdata.94401.LAT]]"
-                    longitude="[[zdata.94401.LNG]]">
-                    <p>San Mateo Downtown Branch @ 198 Baldwin Ave</p>
-                </google-map-marker>
-                <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png"
-                    latitude="[[zdata.95125.LAT]]" longitude="[[zdata.95125.LNG]]">
-                    <p>San Jose Willow Glen Branch @ 1092 Cherry Ave</p>
-                </google-map-marker>
-            </template>
-            <template is="dom-if" if="{{selectedOrderId}}" restamp>
-                <google-map-marker title="Order# orderId shipping drone location" icon="./../images/pins/dronePin.png"
-                    latitude="[[zdata.95117.LAT]]" longitude="[[zdata.95117.LNG]]">
-                    <p>Order# orderId shipping drone location</p>
-                </google-map-marker>
-                <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png"
-                    latitude="[[udata.storelat]]" longitude="[[udata.storelng]]">
-                    <p>San Jose Willow Glen Branch @ 1092 Cherry Ave</p>
+        <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px" latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]">
+            <template id="pins" is="dom-repeat" items="[[pinData]]">
+                <google-map-marker title="[[item.info]]" icon="./../images/pins/[[item.pin]].png" latitude="[[item.lat]]" longitude="[[item.lng]]">
+                    <p>[[item.info]]</p>
                 </google-map-marker>
             </template>
         </google-map>
-        <!--<paper-textarea label="Tracking Data" value="[[parseJson(selectedOrderId)]]"></paper-textarea>-->
+        <template is="dom-if" if="[[showFab(selectedOrderId, orderData, storeData, udata)]]">
+            <paper-fab-morph vertical-align="bottom" horizontal-align="right">
+                <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
+                <div class="dropdown-content">
+                    <!--Insert Order Selector-->
+                    <total-price tracking user-id="[[orderData.userid]]" store-id="[[orderData.storeId]]" quantities="[[orderData.cart]]"></total-price>
+                </div>
+            </paper-fab-morph>
+        </template>
+        <!--<paper-textarea label="Tracking Data" value="[[parseJson(selectedOrderId, orderData)]]"></paper-textarea>-->
     </template>
     <script>
         Polymer({
@@ -56,13 +50,21 @@
                     value: 9
                 },
                 selectedOrderId: {
+                    type: "String",
                     notify: true,
+                    observer: "updateMap"
+                },
+                pinData: {
+                    type: Array,
+                    notify: true,
+                    computed: "getPins(selectedOrderId, orderData, storeData, udata)",
                     observer: "updateMap"
                 }
             },
             observers: ["turnOnFitToMarkers(udata.*, zdata.*)"],
             listeners: {
-                "google-map-marker-close": "updateMap"
+                "google-map-marker-close": "updateMap",
+                "change": "fixOrder"
             },
             ready: function () {
                 this.getHeight(this.h - 20);
@@ -77,14 +79,60 @@
                 return u.addrlng ? u.addrlng : u.ziplng ? u.ziplng : "";
             },
             turnOnFitToMarkers: function () {
-                if (this.zdata && this.udata.ziplat && this.udata.ziplng && this.udata.storelat && this.udata.storelng)
-                    this.$.gmap.fitToMarkers = true;
+                if (this.zdata && this.udata.ziplat && this.udata.ziplng && this.udata.storelat && this.udata.storelng) this.$.gmap.fitToMarkers = true;
             },
             updateMap: function () {
+                this.$.pins.render();
                 this.$.gmap.resize();
+                this.getHeight(this.h);
             },
-            badOrder: function (orderId) {
-                return !(orderId);
+            fixOrder: function () {
+                if (!this.goodOrder()) this.set("selectedOrderId", "");
+                this.updateMap();
+            },
+            getPins: function (selectedOrderId, orderData, storeData, udata) {
+                var rtn = [{
+                    "lat": this.getULat(udata),
+                    "lng": this.getULng(udata),
+                    "info": "Your Current Location",
+                    "pin": "zipPin"
+                }];
+                if (this.goodOrder()) {
+                    rtn.push({
+                        "lat": orderData.delivery.startLat,
+                        "lng": orderData.delivery.startLong,
+                        "info": "Shipping Origin: " + storeData[orderData.storeId].branch + " @ " +
+                            storeData[orderData.storeId].address + " for Order# " + selectedOrderId,
+                        "pin": "storePin"
+                    });
+                    rtn.push({
+                        "lat": orderData.delivery.currentLat,
+                        "lng": orderData.delivery.currentLong,
+                        "info": "Shipping Drone Location for Order# " + selectedOrderId,
+                        "pin": "dronePin"
+                    });
+                    rtn.push({
+                        "lat": orderData.delivery.endLat,
+                        "lng": orderData.delivery.endLong,
+                        "info": "Shipping Destination for Order# " + selectedOrderId,
+                        "pin": "homePin"
+                    });
+                } else
+                    for (var store in storeData) rtn.push({
+                        "lat": this.zdata[store].LAT,
+                        "lng": this.zdata[store].LNG,
+                        "info": storeData[store].branch + " @ " + storeData[store].address,
+                        "pin": "storePin"
+                    });
+                return rtn;
+            },
+            showFab: function (selectedOrderId, orderData, storeData, udata) {
+                return this.goodOrder();
+            },
+            goodOrder: function () {
+                return (!(Object.keys(this.orderData).length === 0 && this.orderData.constructor === Object) &&
+                    !(Object.keys(this.storeData).length === 0 && this.storeData.constructor === Object) &&
+                    !(!this.selectedOrderId));
             },
             capitalize: function (str) {
                 return capitalize(str);
@@ -100,6 +148,9 @@
             },
             flattenJson: function (data) {
                 return flattenJson(data);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);

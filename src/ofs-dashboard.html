@@ -2,27 +2,111 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="ofs-dashboard">
     <style include="app-theme">
-         :host {
-            display: block;
-            padding: 10px;
+        :host {}
+
+        paper-material {
+            /*padding: 20px;*/
+            /*border-radius: 5px;*/
+            /*margin: 4%;*/
+            max-width: 600px;
+            width: 100%;
+            margin: 16px;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 16px;
+        }
+
+        iron-image {
+            @apply(--shadow-elevation-6dp);
+            background-color: #EEEEEE;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            width: 512px;
+            height: 512px;
+            --layout-fit: {
+                border-radius: 50%;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            iron-image {
+                width: 231px;
+                height: 231px;
+            }
+        }
+
+        paper-input, gold-email-input, gold-zip-input {
+            width: 75%;
+            min-width: 241px;
+            max-width: 512px;
+            margin: auto;
+            --paper-input-container-label: {
+                color: var(--darker-alt-accent-color);
+            }
+            --paper-input-container-label-floating: {
+                color: var(--primary-text-color);
+            }
+        }
+
+        #grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        @media only screen and (min-width: 1000px) {
+            paper-toast {
+                margin-left: 191px;
+                margin-bottom: 16px;
+            }
         }
     </style>
     <template>
-        <div class="card">
-            <!--<div class="circle">3</div>-->
-            <!--<div class="circle"><img src="[[udata.photo]]"></div>-->
-            <h1>Dashboard</h1>
-            <h4>In Development</h4>
-            <!--<p>[[parseJson(udata.fname)]]</p>-->
-            <!--<p>[[parseJson(udata.email)]]</p>-->
-            <!--<p>[[getLat(zdata, udata.zipcode)]], [[getLng(zdata, udata.zipcode)]]</p>-->
-            <!--<p>[[parseJson(udata)]]</p>-->
-            <paper-textarea label="Current Zip" value="{{udata.zipcode}}"></paper-textarea>
+        <div id="grid">
+            <paper-material animated elevation="1">
+                <iron-image alt="Your Profile Picture" src="[[udata.photo]]" preload fade sizing="cover"></iron-image>
+                <paper-input readonly id="id" label="Your Unique User Id" value="[[udata.id]]">
+                    <iron-icon icon="my-icons:info" prefix></iron-icon>
+                    <granite-clipboard text="[[udata.id]]" suffix> <paper-icon-button icon="my-icons:copy" on-tap="handleCopy" suffix></paper-icon-button></granite-clipboard>
+                </paper-input>
+                <paper-input id="fname" label="First Name" value="{{udata.fname}}"></paper-input>
+                <paper-input id="lname" label="Last Name" value="{{udata.lname}}"></paper-input>
+                <gold-email-input readonly prevent-invalid-input auto-validate label="Your Email" error-message="Please Enter a Valid Google Email" value="[[udata.email]]"></gold-email-input>
+                <gold-zip-input prevent-invalid-input auto-validate label="Your Zipcode" error-message="Please Enter a Valid 5 Digit US Zipcode" value="{{udata.zipcode}}"></gold-zip-input>
+                <paper-input id="address" label="Your Address" value="{{udata.address}}"></paper-input>
+            </paper-material>
+            <!--<store selector>-->
+            <!--<payment selector>-->
+            <!--<order selector>-->
         </div>
+        <paper-toast id="copiedToast" text="Copied ID to Clipboard!"></paper-toast>
     </template>
     <script>
         Polymer({
             is: 'ofs-dashboard',
+            listeners: {
+                'change': 'handleChange'
+            },
+            handleCopy: function (e) {
+                // var textArea = document.createElement("textarea");
+                // textArea.style.display = 'none';
+                // textArea.value = this.udata.id;
+                // document.body.appendChild(textArea);
+                // textArea.select();
+                // var successful = document.execCommand('copy');
+                // document.body.removeChild(textArea);
+                this.$.copiedToast.open();
+            },
+            handleChange: function (event) {
+                var dataEvent = event.detail.sourceEvent.path[0].dataHost.id;
+                if(dataEvent === "fname" || dataEvent === "lname" || dataEvent === "address")
+                    this.set("udata."+dataEvent, capitalize(this.get("udata."+dataEvent)));
+            },
             getLat: function (zips, zip) {
                 return this.getCord(zips, zip, "LAT");
             },
@@ -47,6 +131,19 @@
             },
             flattenJson: function (data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for (var store in stores) {
+                    temp[stores[store]] = {};
+                    for (var food in stock) temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);

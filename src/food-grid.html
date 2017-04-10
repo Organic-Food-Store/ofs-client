@@ -6,10 +6,14 @@
             display: block;
         }
 
-        #grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        paper-tabs {
+            margin-top: 0px;
+            margin-bottom: 12.5px;
+            --paper-icon-button: {
+                color: var(--alt-accent-color);
+                background-color: var(--accent-color);
+                border-radius: 50%;
+            }
         }
 
         #search {
@@ -21,19 +25,19 @@
             margin-right: 5px;
         }
 
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .filteredWidth {
             margin: auto;
             min-width: 230px;
         }
 
-        paper-tabs {
-            margin-top: 0px;
-            margin-bottom: 12.5px;
-            --paper-icon-button: {
-                color: var(--alt-accent-color);
-                background-color: var(--accent-color);
-                border-radius: 50%;
-            }
+        .clearingButton {
+            margin-bottom: 14px;
         }
     </style>
     <template>
@@ -46,7 +50,19 @@
                     Proceed to Cart
                 </paper-button>
             </a>
-            <!--<paper-fab-expand main-icon="question-answer" hovrd="[[fabHovering]]" curr-notifs="[[totalFabNotfs]]"></paper-fab-expand>-->
+            <paper-fab-morph vertical-align="bottom" horizontal-align="right">
+                <paper-fab icon="my-icons:cart" class="dropdown-trigger"></paper-fab>
+                <div class="dropdown-content">
+                    <total-price store user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+                </div>
+            </paper-fab-morph>
+        </template>
+        <template is="dom-if" if="[[show(cart, count, userCartQuanta)]]">
+            <a on-tap="clearCart" href="/store" tabindex="-1">
+                <paper-button class="clearingButton" raised style="margin-top: 14.5px;">
+                    <iron-icon icon="my-icons:remove-from-cart"></iron-icon>Clear Cart
+                </paper-button>
+            </a>
         </template>
         <template is="dom-if" if="[[store]]">
             <paper-input id="search" class="filteredWidth" autocorrect="off" label="Search" value="{{search}}" style="width: [[filterWidth]]px;">
@@ -59,7 +75,7 @@
                 </template>
             </paper-tabs>
         </template>
-        <div id="grid">
+        <div class="grid">
             <template id="rGrid" is="dom-repeat" items="[[getObjectValues(stockData)]]" filter="matchesFilters">
                 <food-card
                     id="food[[item.id]]"
@@ -89,7 +105,9 @@
             </template>
         </template>
         <template is="dom-if" if="[[show(cart, count, userCartQuanta)]]">
-            <total-price cart user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+            <div class="grid">
+                <total-price cart user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+            </div>
             <a href="/checkout" tabindex="-1">
                 <paper-button raised style="margin-top: 14.5px;">
                     <iron-icon icon="my-icons:checkout"></iron-icon>Proceed to Checkout
@@ -191,7 +209,7 @@
             matchesFilters: function (item) {
                 var show = true;
                 if (this.category != "all") show = (item.category == this.category);
-                if (show && this.search != "") show = (item.id + item.description + item.category).toLowerCase().indexOf(this.search) >= 0;
+                if (show && this.search != "") show = (item.id + item.description + item.category + parseMoney(item.price)).toLowerCase().indexOf(this.search) >= 0;
                 return show && (item.quantity) > 0;
             },
             capitalize: function (str) {
@@ -208,6 +226,20 @@
             },
             flattenJson: function(data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);

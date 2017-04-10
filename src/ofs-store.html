@@ -2,13 +2,13 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="ofs-store">
     <style include="app-theme">
-         :host {
+        :host {
             display: block;
             padding: 12.5px;
         }
     </style>
     <template>
-        <food-grid udata="[[udata]]" store></food-grid>
+        <food-grid udata="{{udata}}" store></food-grid>
     </template>
     <script>
         Polymer({
@@ -25,12 +25,26 @@
             isInt: function (value) {
                 return isInt(value);
             },
-            flattenJson: function (data) {
+            flattenJson: function(data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
-                return items.reduce(function (acc, item) {
+                return items.reduce(function(acc, item) {
                     return acc + "\nObject\n" + JSON.stringify(item, null, 4);
                 }, "");
             }

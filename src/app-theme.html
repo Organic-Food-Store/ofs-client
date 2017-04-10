@@ -25,11 +25,13 @@
             --accent-text-color: #FFC107;
             --alt-text-color: #5D4037;
             --secondary-text-color: #757575;
+            --faded-text-color: #EEEEEE;
             --disabled-text-color: #BDBDBD;
             --menu-text-color: #FFFFFF;
             /*Material Design Spec General Global App Colors*/
             --primary-background-color: #C8E6C9;
             --secondary-background-color: #DDDDDD;
+            --alt-background-color: #EEEEEE;
             --menu-background-color: #FFFFFF;
             --divider-color: #BDBDBD;
             /*
@@ -66,12 +68,12 @@
                 color: var(--alt-text-color);
             }
             /*Paper Menu Global Styles*/
-            --paper-menu-color: var(--accent-text-color);
+            --paper-menu-color: var(--primary-text-color);
             --paper-menu-background-color: var(--menu-background-color);
             --paper-menu-selected-item: {
-                background-color: var(--dark-accent-color);
-                color: var(--menu-text-color);
-                font-weight: bold;
+                /*background-color: var(--alt-accent-color);*/
+                color: var(--primary-text-color);
+                font-weight: initial;
             }
             /*--menu-link-color: #111111;*/
             /*Paper Card Global Styles*/
@@ -107,6 +109,24 @@
         /*iron-icon {
             color: var(--darker-alt-accent-color);
         }*/
+
+        paper-fab-morph {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            --paper-morph-dropdown: {
+                @apply(--shadow-elevation-2dp);
+            }
+        }
+
+        paper-material {
+            background-color: var(--menu-background-color);
+        }
+
+        paper-material:hover {
+            @apply(--shadow-elevation-6dp);
+        }
 
         paper-button:hover{
             @apply(--shadow-elevation-6dp);
@@ -180,6 +200,17 @@
 
         paper-button iron-icon {
             margin-right: 7px;
+        }
+
+        h2 {
+            color: var(--primary-text-color);
+            font-weight: 200;
+        }
+
+        h3 {
+            color: var(--secondary-text-color);
+            font-weight: 500;
+            margin: 5px 0px;
         }
 
         h4 {

@@ -6,16 +6,12 @@
             display: block;
             padding: 10px;
         }
+
+        paper-button {
+            margin-top: 14.5px;
+        }
     </style>
     <template>
-        <firebase-document
-            path="/stock"
-            data="{{latestStock}}">
-        </firebase-document>
-        <firebase-document
-            path="/branches"
-            data="{{latestStores}}">
-        </firebase-document>
         <total-price checkout user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
         <!--<a href="/tracking?#9432942389433949" tabindex="-1">-->
         <a on-tap="checkout" tabindex="-1">
@@ -30,16 +26,8 @@
         Polymer({
             is: 'ofs-checkout',
             checkout: function() {
-                var stores = this.latestStores;
-                var stock = this.latestStock;
-                var temp = {};
-                for(var store in stores) {
-                    temp[stores[store]] = {};
-                    for(var food in stock)
-                        temp[stores[store]][stock[food]] = "0";
-                }
-                this.set("udata.cart", temp);
-                window.location = "tracking#9432942389433949";
+                this.clearCart();
+                window.location = "tracking#9432942389433948";
             },
             capitalize: function (str) {
                 return capitalize(str);
@@ -53,12 +41,26 @@
             isInt: function (value) {
                 return isInt(value);
             },
-            flattenJson: function (data) {
+            flattenJson: function(data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
-                return items.reduce(function (acc, item) {
+                return items.reduce(function(acc, item) {
                     return acc + "\nObject\n" + JSON.stringify(item, null, 4);
                 }, "");
             }

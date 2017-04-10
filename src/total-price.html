@@ -2,88 +2,202 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="total-price">
     <style include="app-theme">
-         :host {}
+        :host {
+            --paper-menu: {
+                padding: 0px;
+            }
+        }
+
+        paper-icon-item {
+            --paper-item-icon-width: 36px;
+        }
+
+        paper-icon-item.iron-selected {
+            @apply(--shadow-elevation-6dp);
+            background-color: var(--secondary-background-color);
+            z-index: 2;
+        }
+
+        paper-menu paper-submenu paper-menu paper-icon-item {
+            padding-left: 25px;
+        }
+
+        paper-menu paper-submenu paper-menu paper-icon-item.iron-selected {
+            @apply(--shadow-elevation-2dp);
+            background-color: var(--alt-background-color);
+            z-index: 1;
+        }
+
+        paper-item-body {
+            text-align: left;
+        }
+
+        paper-material {
+            padding: 8px 8px;
+            margin: auto;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            max-width: 300px;
+            box-sizing: border-box;
+            display: inline-block;
+            width: 90%;
+            text-align: center;
+        }
+
+        #tabelize {
+            display: table-cell;
+        }
+
+        #proceedToCartButton {
+            margin: 10px auto 10px auto;
+        }
+
+        iron-icon, #boldColoredMoney {
+            color: var(--darker-alt-accent-color);
+        }
+
+        iron-icon#cart {
+            width: 35px;
+            height: 35px;
+        }
     </style>
     <template>
         <firebase-document path="/categories" data="{{categories}}"> </firebase-document>
         <firebase-document path="/stores/[[storeId]]/stock" data="{{data}}"> </firebase-document>
-        <template is="dom-repeat" items="{{totals}}" as="item" index-as="index">
-            <p>[[capitalize(item.category)]] Total: ${{item.total}}</p>
-        </template>
-        <!--<paper-textarea label="Total Price Data" value="[[parseJson(cart, storeId, userId, categories, quantities, data)]]"></paper-textarea>-->
+        <!--<div id="grid">-->
+        <paper-material id="tabelize" elevation="1" animated class$="[[passedDownClass]]">
+            <paper-menu><template is="dom-repeat" items="[[getObjectValues(categories)]]">
+                <paper-submenu disabled="[[emptySubCart(item, data, quantities)]]">
+                    <paper-icon-item class="menu-trigger">
+                        <iron-icon icon="my-icons:tag" item-icon></iron-icon>
+                        <paper-item-body><div><h3>[[capitalize(item)]]<template is="dom-if" if="[[notStore(store)]]"> Total</template></h3></div></paper-item-body>
+                        <template is="dom-if" if="[[store]]">
+                            <div><h3><b>[[getCategoryTotalQuanta(item, data, quantities)]]</b></h3></div>
+                        </template>
+                        <template is="dom-if" if="[[notStore(store)]]">
+                            <div><h3><b>[[getCategoryTotal(item, data, quantities)]]</b></h3></div>
+                        </template>
+                    </paper-icon-item>
+                    <paper-menu class="menu-content" selected="0">
+                        <template is="dom-repeat" items="[[getSubCart(item, data, quantities)]]">
+                            <paper-icon-item>
+                                <iron-icon icon="my-icons:shopping-basket" item-icon></iron-icon>
+                                <paper-item-body two-line>
+                                    <div>[[capitalize(item.id)]]</div>
+                                    <div secondary>[[item.quanta]] units in Cart</div>
+                                </paper-item-body>
+                                <div><h4><b>[[parseMoney(item.price)]]</b></h4></div>
+                            </paper-icon-item>
+                        </template>
+                    </paper-menu>
+                </paper-submenu>
+            </template></paper-menu>
+            <template is="dom-if" if="[[store]]">
+                <a href="/cart" tabindex="-1">
+                    <paper-button id="proceedToCartButton" raised>
+                        <iron-icon icon="my-icons:cart"></iron-icon>
+                        Proceed to Cart
+                    </paper-button>
+                </a>
+            </template>
+            <template is="dom-if" if="[[notStore(store)]]">
+                <paper-material elevation="2" animated>
+                    <h2><iron-icon id="cart" icon="my-icons:cart"></iron-icon>Cart Total: <b id="boldColoredMoney">[[getTotal(categories, data, quantities)]]</b></h2>
+                </paper-material>
+            </template>
+        </paper-material>
+        <!--<template is="dom-if" if="[[checkout]]">-->
+            <!--Implement Credit Card Selector-->
+        <!--</template>-->
+        <!--</div>-->
+        <!--<paper-textarea label="Total Price Data" value="[[parseJson(cart, checkout, storeId, userId, quantities, categories, data)]]"></paper-textarea>-->
     </template>
     <script>
         Polymer({
             is: 'total-price',
             properties: {
-                cart: {
+                store: {
                     type: Boolean,
-                    notify: true,
                     value: false
-                }, checkout: {
+                }, cart: {
                     type: Boolean,
-                    notify: true,
                     value: false
-                }, totals: {
-                    type: Array,
-                    notify: true,
-                    computed: "getTotal(storeId, categories, quantities, data)"
+                },
+                checkout: {
+                    type: Boolean,
+                    value: false
                 }
             },
-            getTotal: function (sId, categories, quantas, data) {
-                if (!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
-                    Object) return [];
-                log("=============================GET TOTAL FUNCTION============================");
-                log("getTotal: sId");
-                log(sId);
-                log("getTotal: categories");
-                log(categories);
-                log("getTotal: quantas");
+            notStore: function(store) {
+                return !store;
+            },
+            getSubCart: function (category, data, quantas) {
+                log("================================GET SUB CART FUNCTION================================");
+                log("getSubCart: category");
+                log(category);
+                log("getSubCart: quantas");
                 log(quantas);
-                log("getTotal: data");
+                log("getSubCart: data");
                 log(data);
-                log("!data");
-                log(!data);
-                log(
-                    "!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object"
-                );
-                log(!sId || !categories || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
-                    Object);
+                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
                 var rtn = [];
-                for (var i in categories) rtn.push(this.getCategoryTotal(categories[i], quantas[sId], data));
-                rtn.push(this.getCategoryTotal("all", quantas[sId], data));
-                log("Total rtn");
+                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return rtn;
+                for (var i in data)
+                    if (data[i].category === category && isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0)
+                        rtn.push({"id": data[i].id, "quanta": quantas[this.storeId][data[i].id], "price": parseInt(quantas[this.storeId][data[i].id]) * parseFloat(data[i].price)});
+                log("Sub Cart Return");
                 log(rtn);
-                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 return rtn;
             },
-            getCategoryTotal: function (category, quantas, data) {
-                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
-                    Object) return {};
-                log("========================GET CATEGORY TOTAL FUNCTION========================");
+            emptySubCart: function (category, data, quantas) {
+                return parseFloat(this.getCategoryTotal(category, data, quantas).substring(1)) <= 0;
+            },
+            getTotal: function (categories, data, quantas) {
+                return this.getCategoryTotal("all", data, quantas);
+            },
+            getCategoryTotal: function (category, data, quantas) {
+                log("=============================GET CATEGORY TOTAL FUNCTION=============================");
                 log("getCategoryTotal: category");
                 log(category);
                 log("getCategoryTotal: quantas");
                 log(quantas);
                 log("getCategoryTotal: data");
                 log(data);
-                log(
-                    "!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object"
-                );
-                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor ===
-                    Object);
-                var rtn = {
-                    category: (category === "all") ? "cart" : category
-                };
+                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
                 var total = 0;
+                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return parseMoney(total);
                 for (var i in data)
-                    if (category == "all" || data[i].category == category) total += data[i].price * quantas[
-                        data[i].id];
-                rtn["total"] = total;
-                log("Category Total rtn");
-                log(rtn);
-                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                return rtn;
+                    if (isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0 && (category === "all" || data[i].category == category))
+                        total += data[i].price * quantas[this.storeId][data[i].id];
+                log("Category Total");
+                log(total);
+                log("Parsed Category Total");
+                log(parseMoney(total));
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                return parseMoney(total);
+            },
+            getCategoryTotalQuanta: function (category, data, quantas) {
+                log("=========================GET CATEGORY TOTAL QUANTA FUNCTION==========================");
+                log("getCategoryTotalQuanta: category");
+                log(category);
+                log("getCategoryTotalQuanta: quantas");
+                log(quantas);
+                log("getCategoryTotalQuanta: data");
+                log(data);
+                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
+                var total = 0;
+                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return total;
+                for (var i in data)
+                    if (isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0 && (category === "all" || data[i].category == category))
+                        total += 1; //quantas[this.storeId][data[i].id];
+                log("Category Total Quanta");
+                log(total);
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                return total;
             },
             capitalize: function (str) {
                 return capitalize(str);
@@ -99,6 +213,9 @@
             },
             flattenJson: function (data) {
                 return flattenJson(data);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);

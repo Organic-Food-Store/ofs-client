@@ -103,9 +103,10 @@
         <div class="fill background glass"></div>
         <div class="fill background">
             <simple-slider class="fill" transition-property="opacity" transition-duration="1" transition-delay="5">
+                <!--
                 <img class="slide" src="./../images/bg/1.png">
                 <img class="slide" src="./../images/bg/2.png">
-                <!--<img class="slide" src="./../images/bg/3.png">
+                <img class="slide" src="./../images/bg/3.png">
                 <img class="slide" src="./../images/bg/4.png">
                 <img class="slide" src="./../images/bg/5.png">
                 <img class="slide" src="./../images/bg/6.png">
@@ -137,7 +138,25 @@
                 <img class="slide" src="./../images/bg/32.png">
                 <img class="slide" src="./../images/bg/33.png">
                 <img class="slide" src="./../images/bg/34.png">
-                <img class="slide" src="./../images/bg/35.png">-->
+                <img class="slide" src="./../images/bg/35.png">
+                -->
+                <img class="slide" src="./../images/bg/35.png">
+                <img class="slide" src="./../images/bg/36.png">
+                <img class="slide" src="./../images/bg/37.png">
+                <img class="slide" src="./../images/bg/38.png">
+                <img class="slide" src="./../images/bg/39.png">
+                <img class="slide" src="./../images/bg/40.png">
+                <img class="slide" src="./../images/bg/41.png">
+                <img class="slide" src="./../images/bg/42.png">
+                <img class="slide" src="./../images/bg/43.png">
+                <img class="slide" src="./../images/bg/44.png">
+                <img class="slide" src="./../images/bg/45.png">
+                <img class="slide" src="./../images/bg/46.png">
+                <img class="slide" src="./../images/bg/47.png">
+                <img class="slide" src="./../images/bg/48.png">
+                <img class="slide" src="./../images/bg/49.png">
+                <img class="slide" src="./../images/bg/50.png">
+                <img class="slide" src="./../images/bg/51.png">
             </simple-slider>
         </div>
     </template>
@@ -178,12 +197,26 @@
             isInt: function (value) {
                 return isInt(value);
             },
-            flattenJson: function (data) {
+            flattenJson: function(data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
-                return items.reduce(function (acc, item) {
+                return items.reduce(function(acc, item) {
                     return acc + "\nObject\n" + JSON.stringify(item, null, 4);
                 }, "");
             }

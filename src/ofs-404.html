@@ -34,6 +34,20 @@
             flattenJson: function(data) {
                 return flattenJson(data);
             },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
+            },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
                 return items.reduce(function(acc, item) {

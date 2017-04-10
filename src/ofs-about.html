@@ -2,23 +2,37 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="ofs-about">
     <style include="app-theme">
-         :host {
-            display: block;
+        :host {}
+
+        paper-material {
+            text-align: center;
+            margin: 24px;
+            padding: 16px;
+        }
+
+        body {
+            color: #212121;
+            padding-left: 4cm;
+            padding-right: 4cm;
+        }
+
+        h2 {
+            border-bottom: 1px #FFC107 solid;
             padding: 10px;
         }
     </style>
     <template>
-        <div class="card">
-            <div class="circle">1</div>
-            <h1>About</h1>
-            <h4>In Development</h4>
-            <!--<p>[[parseJson(udata)]]</p>-->
-        </div>
+        <paper-material elevation="1">
+            <h2>Who We Are</h2>
+            <p>OFS is the new delivery service that delivers quality organic foods to customers easily. Our two stores has in stock an assortment of the freshest ingredients ready to be delivered.</p>
+            <h2>Our Mission</h2>
+            <p>Our mission is to make life better for our customers, by helping them eat healthy and by delivering groceries to them as quickly and as efficiently as possible.</p>
+        </paper-material>
     </template>
     <script>
         Polymer({
             is: 'ofs-about',
-            ccapitalize: function (str) {
+            capitalize: function (str) {
                 return capitalize(str);
             },
             getObjectKeys: function (items) {
@@ -32,6 +46,19 @@
             },
             flattenJson: function (data) {
                 return flattenJson(data);
+            },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for (var store in stores) {
+                    temp[stores[store]] = {};
+                    for (var food in stock) temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);

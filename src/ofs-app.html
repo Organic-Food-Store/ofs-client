@@ -10,14 +10,18 @@
 <link rel="import" href="./../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="./../bower_components/iron-location/iron-location.html">
 <link rel="import" href="./../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./../bower_components/iron-image/iron-image.html">
 <link rel="import" href="./../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="./../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="./../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="./../bower_components/paper-material/paper-material.html">
 <link rel="import" href="./../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="./../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./../bower_components/paper-item/paper-item.html">
+<link rel="import" href="./../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="./../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="./../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="./../bower_components/paper-menu/paper-submenu.html">
 <link rel="import" href="./../bower_components/paper-input/paper-input.html">
 <link rel="import" href="./../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="./../bower_components/paper-dialog/paper-dialog.html">
@@ -27,56 +31,57 @@
 <link rel="import" href="./../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="./../bower_components/paper-card/paper-card.html">
 <link rel="import" href="./../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="./../bower_components/gold-email-input/gold-email-input.html">
 <link rel="import" href="./../bower_components/gold-zip-input/gold-zip-input.html">
+<link rel="import" href="./../bower_components/gold-cc-input/gold-cc-input.html">
+<link rel="import" href="./../bower_components/gold-cc-cvc-input/gold-cc-cvc-input.html">
+<link rel="import" href="./../bower_components/gold-cc-expiration-input/gold-cc-expiration-input.html">
 <link rel="import" href="./../bower_components/polymer-simple-slider/simple-slider.html">
-<!--<link rel="import" href="">-->
 <link rel="import" href="./../bower_components/google-map/google-map.html">
 <link rel="import" href="./../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="./../bower_components/granite-clipboard/granite-clipboard.html">
+<link rel="import" href="./../bower_components/paper-fab-transitions/paper-fab-transitions.html">
+<link rel="import" href="./../bower_components/paper-fab-transitions/paper-fab-morph.html">
+<!--<link rel="import" href="">-->
 <link rel="import" href="./app-theme.html">
 <link rel="import" href="./my-icons.html">
 <link rel="import" href="./food-card.html">
 <link rel="import" href="./food-grid.html">
 <link rel="import" href="./total-price.html">
-<link rel="import" href="./paper-fab-expand.html">
+<!--<link rel="import" href="./paper-fab-expand.html">-->
 
 <!--
-TODO LATER:
-    - Finalize Readme
-    - Implement an address validator / zip getter
-    - Make a basic checkout view
-    - Manage logging in
-    - Make the General Selector
-    - Make the Store Selector
-        - Add to cart empty view
-    - Make the Order Selector
-    - Make the Credit Card Selector
-    - Make the tracking page dynamic
-    - Flesh out Check out view
-        - Credit Card Selection Menu
-        - Create Order with orderId, etc
-        - Should be handled serverside?
-        - Checkout should route to tracking page with new orderId
-        - Tracking page should be able to read url to get orderId
-    - Reposition search and proceed to cart
 TODO NOW:
-    - Make home page unscrollable on mobile
-    - Make a clear cart button
-    - Fix total price appearing in cart after emptying
+    - Properly Implement Address
+    - Implement an address validator / zip getter
+    - Add Store Selector to cart empty view
+    - Make the Selectors: General, Store, Payment, Order
+    - Put Selectors in Dashboard
+    - Finish Checkout
+        - Add Payment Selection Menu
+        - Create Order with orderId, etc
+        - Should be handled serverside
+TODO LATER:
+    - Manage logging in
     - Put in my loading screen to make everything prettier
-    - Add a scroll to top scroll to bottom paper fab
-    - Flesh out Dashboard
-    - Improve look of food card - Get Icons for each section
-    - Finish Total Price Calculator for Cart & Checkout
-    - Add in more filters to the store
-    - Test stamping the homepage for performance
-FEEDBACK:
-    - Resize all images down to minimum Resize
-    - add a floating fab in the store to show what has been added, along with ability to move to cart
-    - Check on Divya's computer
+    - Finalize Readme
+REACH:
+    - Implement Paper Tags into the store to Search and Filter after pressing enter
+    - Make home page unscrollable on mobile
 -->
 
 <dom-module id="ofs-app">
     <style include="app-theme">
+        paper-menu {
+            --paper-menu-color: var(--accent-text-color);
+            --paper-menu-background-color: var(--menu-background-color);
+            --paper-menu-selected-item: {
+                background-color: var(--dark-accent-color);
+                color: var(--menu-text-color);
+                font-weight: bold;
+            }
+        }
+
         paper-button {
             background-color: var(--menu-background-color);
             --paper-button-ink-color: var(--accent-color);
@@ -136,9 +141,10 @@ FEEDBACK:
             data="{{latestStores}}">
         </firebase-document>
         <iron-ajax id="zipsAjax" auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
-        <!--<iron-ajax id="addressAjax" auto url="https://organic-food-store.herokuapp.com/api/addrToCoords/[[userData.address]]" handle-as="json" last-response="{{addrJsonData}}"></iron-ajax>-->
         <iron-ajax id="userExistingAjax" auto url="https://organic-food-store.herokuapp.com/api/userExists/[[user.uid]]" handle-as="json" last-response="{{userExists}}"></iron-ajax>
         <iron-ajax id="closestStoreAjax" auto url="https://organic-food-store.herokuapp.com/api/closestStore/[[userData.zipcode]]" handle-as="json" last-response="{{closestStoreId}}"></iron-ajax>
+        <!--<iron-ajax id="zipToAddressAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?latlng=[[userData.ziplat]],[[userData.ziplong]]" handle-as="json" last-response="{{zipAddrJsonData}}"></iron-ajax>
+        <iron-ajax id="addressToCoordsAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?address=[[userData.address]]" handle-as="json" last-response="{{addrCordJsonData}}"></iron-ajax>-->
         <app-location route="{{route}}"></app-location>
         <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
         <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
@@ -211,8 +217,8 @@ FEEDBACK:
                     <ofs-about name="about" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-about>
                     <ofs-dashboard name="dashboard" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-dashboard>
                     <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
-                    <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-cart>
-                    <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-checkout>
+                    <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-cart>
+                    <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-checkout>
                     <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
                     <ofs-404 name="404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-404>
                 </iron-pages>
@@ -562,6 +568,20 @@ FEEDBACK:
             flattenJson: function(data) {
                 return flattenJson(data);
             },
+            clearCart: function () {
+                var stores = this.latestStores;
+                var stock = this.latestStock;
+                var temp = {};
+                for(var store in stores) {
+                    temp[stores[store]] = {};
+                    for(var food in stock)
+                        temp[stores[store]][stock[food]] = "0";
+                }
+                this.set("udata.cart", temp);
+            },
+            parseMoney: function (money) {
+                return parseMoney(money);
+            },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
                 return items.reduce(function(acc, item) {
@@ -580,6 +600,11 @@ FEEDBACK:
         var debug = false;
         function log(message) {
             if(debug) console.log(message);
+        }
+
+        var formatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 2, });
+        function parseMoney(m) {
+            return formatter.format(m);
         }
 
         function getObjectKeys(obj) {
@@ -607,7 +632,8 @@ FEEDBACK:
                 if(arr[str].length > 2 && arr[str].toLowerCase() != "the" && arr[str].toLowerCase() != "and") {
                     arr[str] = arr[str].replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
                     arr[str] = arr[str].charAt(0).toUpperCase() + arr[str].slice(1);
-                }
+                    arr[str] = arr[str].trim();
+                } else if (arr[str] === "") arr.splice(str, 1);
             return arr.join(" ");
         }
 
