@@ -10,13 +10,22 @@
         paper-button {
             margin-top: 14.5px;
         }
+
+        #grid {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
     </style>
     <template>
-        <total-price checkout user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
-        <!--<a href="/tracking?#9432942389433949" tabindex="-1">-->
+        <div id="grid">
+            <total-price checkout user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+            <!--<a href="/tracking?#9432942389433948" tabindex="-1">-->
+        </div>
         <a on-tap="checkout" tabindex="-1">
             <paper-button raised>
-                <iron-icon icon="my-icons:credit-card"></iron-icon>
+                <!--<iron-icon icon="my-icons:credit-card"></iron-icon>-->
                 <iron-icon icon="my-icons:receipt"></iron-icon>
                 Checkout
             </paper-button>
