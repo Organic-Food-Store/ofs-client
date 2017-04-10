@@ -14,7 +14,7 @@
         <!--<firebase-document path="/users/[[orderUserId]]/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>-->
         <iron-location hash="{{selectedOrderId}}"></iron-location>
         <paper-input id="trackingIdInput" label="Enter Tracking ID" type="number" raised value="{{selectedOrderId}}"></paper-input>
-        <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px" latitude="[[getULat(udata)]]" longitude="[[getULng(udata)]]">
+        <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px">
             <template id="pins" is="dom-repeat" items="[[pinData]]">
                 <google-map-marker title="[[item.info]]" icon="./../images/pins/[[item.pin]].png" latitude="[[item.lat]]" longitude="[[item.lng]]">
                     <p>[[item.info]]</p>

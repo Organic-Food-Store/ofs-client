@@ -27,47 +27,64 @@
             padding-right: 4cm;
         }
 
-        #ourStores {
-            display: flex;
-        }
-
         #branches {
             width: 220px;
         }
 
         google-map {
+            position: static;
             height: 350px;
             width: 75%;
         }
     </style>
     <template>
-        <paper-material elevation="1">
+        <paper-material animated elevation="1">
             <h2>Who We Are</h2>
             <p>OFS is the new delivery service that delivers quality organic foods to customers easily. Our two stores has in stock an assortment of the freshest ingredients ready to be delivered.</p>
+        </paper-material>
+        <paper-material animated elevation="1">
             <h2>Our Mission</h2>
             <p>Our mission is to make life better for our customers, by helping them eat healthy and by delivering groceries to them as quickly and as efficiently as possible.</p>
         </paper-material>
-        <paper-material elevation="1">
+        <paper-material animated elevation="1">
             <h2>Our Stores</h2>
-            <div id="ourStores">
-                <div id="branches">
+            <p><b>San Mateo Downtown Branch</b> <br>198 Baldwin Ave <br>San Mateo, CA 94401</p>
+            <p><b>San Jose Willow Glen Branch</b> <br>1092 Cherry Ave <br>San Jose, CA 92125</p>
+        </paper-material>
+        <paper-material animated elevation="1">
+            <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="9" disable-zoom additional-map-options='{"draggable": false}'>
+                <google-map-marker title="Your Location" icon="./../images/pins/zipPin.png" latitude="[[udata.ziplat]]" longitude="[[udata.ziplng]]">
+                    <p>Your Location</p>
+                </google-map-marker>
+                <google-map-marker title="San Mateo Downtown Branch" icon="./../images/pins/storePin.png" latitude="[[zdata.94401.LAT]]" longitude="[[zdata.94401.LNG]]">
                     <p><b>San Mateo Downtown Branch</b> <br>198 Baldwin Ave <br>San Mateo, CA 94401</p>
+                </google-map-marker>
+                <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png" latitude="[[zdata.95125.LAT]]" longitude="[[zdata.95125.LNG]]">
                     <p><b>San Jose Willow Glen Branch</b> <br>1092 Cherry Ave <br>San Jose, CA 92125</p>
-                </div>
-                <google-map fit-to-markers>
-                    <google-map-marker title="San Mateo Downtown Branch" icon="./../images/pins/storePin.png" latitude="[[zdata.94401.LAT]]" longitude="[[zdata.94401.LNG]]">
-                        <p><b>San Mateo Downtown Branch</b> <br>198 Baldwin Ave <br>San Mateo, CA 94401</p>
-                    </google-map-marker>
-                    <google-map-marker title="San Jose Willow Glen Branch @ 1092 Cherry Ave" icon="./../images/pins/storePin.png" latitude="[[zdata.95125.LAT]]" longitude="[[zdata.95125.LNG]]">
-                        <p><b>San Jose Willow Glen Branch</b> <br>1092 Cherry Ave <br>San Jose, CA 92125</p>
-                    </google-map-marker>
-                </google-map>
-            </div>
+                </google-map-marker>
+            </google-map>
         </paper-material>
     </template>
     <script>
         Polymer({
             is: 'ofs-about',
+            observers: ["turnOnFitToMarkers(udata.*, zdata.*)"],
+            listeners: {
+                "google-map-marker-close": "updateMap"
+            },
+            getULat: function (u) {
+                return u.addrlat ? u.addrlat : u.ziplat ? u.ziplat : "";
+            },
+            getULng: function (u) {
+                return u.addrlng ? u.addrlng : u.ziplng ? u.ziplng : "";
+            },
+            turnOnFitToMarkers: function () {
+                if (this.zdata && this.udata.ziplat && this.udata.ziplng && this.udata.storelat && this.udata
+                    .storelng) this.$.gmap.fitToMarkers = true;
+            },
+            updateMap: function () {
+                this.$.gmap.resize();
+            },
             capitalize: function (str) {
                 return capitalize(str);
             },
