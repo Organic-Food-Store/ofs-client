@@ -1,0 +1,21 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="store-selector">
+    <style include="app-theme">
+         :host {
+            display: block;
+            padding: 10px;
+        }
+    </style>
+    <template>
+        <general-selector udata="[[udata]]" store></general-selector>
+    </template>
+    <script>
+     Polymer({
+            is: 'store-selector',
+            properties: {
+
+            },
+        });
+    </script>
+</dom-module>

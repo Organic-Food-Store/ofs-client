@@ -1,0 +1,21 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="payment-selector">
+    <style include="app-theme">
+         :host {
+            display: block;
+            padding: 10px;
+        }
+    </style>
+    <template>
+        <general-selector udata="[[udata]]" payment></general-selector>
+    </template>
+    <script>
+     Polymer({
+            is: 'payment-selector',
+            properties: {
+
+            },
+        });
+    </script>
+</dom-module>

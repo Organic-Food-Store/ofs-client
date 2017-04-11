@@ -1,0 +1,62 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="general-selector">
+    <style include="app-theme">
+         :host {}
+    </style>
+    <template>
+        <firebase-document path="/users/[[userId]]" data=userData></firebase-document>
+        <firebase-document path="/orders/[[orderId]]" data=orderData></firebase-document>
+        <firebase-document path="/stores" data=stores></firebase-document>
+        <template is="dom-if" if="[[order]]">
+            <div role="listbox">
+                <template is="dom-repeat" items ="[[userData.orderHistory]]">
+                    <paper-icon-item>
+                        <iron-icon icon="icons:mail" item-icon></iron-icon>
+                        <paper-item-body two-line>
+                            <div>[[item]]</div>
+                            <div secondary>[[orderData.timestamp]]</div>
+                        </paper-item-body>
+                       <!-- <iron-icon icon="icons:mail"></iron-icon> -->
+                    </paper-icon-item>
+                </template>
+            </div>
+        </template>
+        <template is="dom-if" if="[[payment]]">
+            <div role="listbox">
+                <template is="dom-repeat" items="[[userData.paymentMethods]]">
+                    <paper-icon-item>
+                        <iron-icon icon="icons:credit-card" item-icon></iron-icon>
+                        <paper-item-body two-line>
+                            <div>[[item.number]]</div>
+                            <div secondary>[[item.cvc]]</div>
+                        </paper-item-body>
+                        <!--<iron-icon icon="icons:credit-card"></iron-icon>-->
+                    </paper-icon-item>
+                </template>
+            </div>
+        </template>
+        <template is="dom-if" if="[[store]]">
+            <div role="listbox">
+                <template is="dom-repeat" items="[[stores]]">
+                    <paper-icon-item>
+                        <iron-icon icon="icons:store" item-icon></iron-icon>
+                        <paper-item-body two-line>
+                            <div>[[item.branch]]</div>
+                            <div secondary>[[item]]</div>
+                        </paper-item-body>
+                        <!--<iron-icon icon="icons:store"></iron-icon>-->
+                    </paper-icon-item>
+                </template>
+            </div>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            is: 'general-selector',
+            properties: {
+
+            },
+        });
+    </script>
+</dom-module>

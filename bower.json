@@ -42,7 +42,10 @@
     "gold-cc-cvc-input": "PolymerElements/gold-cc-cvc-input#^1.0.9",
     "iron-image": "PolymerElements/iron-image#^1.2.5",
     "granite-clipboard": "LostInBrittany/granite-clipboard#^1.0.2",
-    "paper-fab-transitions": "^0.1.0"
+    "paper-fab-transitions": "^0.1.0",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1",
+    "paper-ripple": "PolymerElements/paper-ripple#^1.0.10",
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
