@@ -8,6 +8,8 @@
     },
     "scripts": {
         "lint": "eslint . --ext js,html --ignore-path .gitignore",
-        "test": "npm run lint && polymer test"
+        "test": "npm run lint && polymer test",
+        "start": "polymer serve -p 8080 -o | npm run watch",
+        "watch": "browser-sync start --proxy localhost:8080 --files \"src/**/*.*, index.html, *.js\""
     }
 }

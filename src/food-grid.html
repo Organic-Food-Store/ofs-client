@@ -16,6 +16,20 @@
             }
         }
 
+        paper-menu-button {
+            padding: 0px;
+        }
+
+        paper-icon-button {
+            --paper-icon-button: {
+                width: 24px;
+                height: 24px;
+                padding: 0px;
+                margin-right: 5px;
+                margin-left: 5px;
+            }
+        }
+
         #search {
             margin-top: 5px;
             margin-bottom: 5px;
@@ -23,6 +37,7 @@
 
         #search iron-icon {
             margin-right: 5px;
+            margin-left: 5px;
         }
 
         .grid {
@@ -38,6 +53,14 @@
 
         .clearingButton {
             margin-bottom: 14px;
+        }
+
+        paper-menu {
+            padding: 5px;
+        }
+
+        paper-icon-item {
+            min-width: 250px;
         }
     </style>
     <template>
@@ -67,6 +90,31 @@
         <template is="dom-if" if="[[store]]">
             <paper-input id="search" class="filteredWidth" autocorrect="off" label="Search" value="{{search}}" style="width: [[filterWidth]]px;">
                 <iron-icon icon="my-icons:search" prefix></iron-icon>
+                <paper-menu-button suffix dynamic-align>
+                    <paper-icon-button icon="my-icons:store" class="dropdown-trigger" suffix></paper-icon-button>
+                    <div class="dropdown-content">
+                        <paper-menu>
+                            <paper-icon-item>
+                                <iron-icon icon="my-icons:store" item-icon></iron-icon>
+                                <paper-item-body three-line>
+                                    <div>Branch</div>
+                                    <div secondary>Distance from Zip</div>
+                                    <div secondary>Address</div>
+                                </paper-item-body>
+                                <h4><b>95125</b></h4>
+                            </paper-icon-item>
+                            <paper-icon-item>
+                                <iron-icon icon="my-icons:store" item-icon></iron-icon>
+                                <paper-item-body three-line>
+                                    <div>Branch</div>
+                                    <div secondary>Distance from Zip</div>
+                                    <div secondary>Address</div>
+                                </paper-item-body>
+                                <h4><b>94014</b></h4>
+                            </paper-icon-item>
+                        </paper-menu>
+                    </div>
+                </paper-menu-button>
             </paper-input>
             <paper-tabs selected="{{menuSelect}}" scrollable fit-container>
                 <paper-tab>All</paper-tab>
