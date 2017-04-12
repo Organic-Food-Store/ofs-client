@@ -1,9 +1,4 @@
-# Polymer App Toolbox - Starter Kit
-
-
-### Migrating from Polymer Starter Kit v1?
-
-[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html)
+# OFS
 
 ### Setup
 
