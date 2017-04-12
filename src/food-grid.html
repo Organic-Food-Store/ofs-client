@@ -40,6 +40,13 @@
             margin-left: 5px;
         }
 
+        store-selector {
+            --max-general-selector-width: 300px;
+            --general-selector-styles: {
+                @apply(--shadow-elevation-2dp);
+            }
+        }
+
         .grid {
             display: flex;
             flex-wrap: wrap;
@@ -53,14 +60,6 @@
 
         .clearingButton {
             margin-bottom: 14px;
-        }
-
-        paper-menu {
-            padding: 5px;
-        }
-
-        paper-icon-item {
-            min-width: 250px;
         }
     </style>
     <template>
@@ -90,29 +89,10 @@
         <template is="dom-if" if="[[store]]">
             <paper-input id="search" class="filteredWidth" autocorrect="off" label="Search" value="{{search}}" style="width: [[filterWidth]]px;">
                 <iron-icon icon="my-icons:search" prefix></iron-icon>
-                <paper-menu-button suffix dynamic-align>
+                <paper-menu-button suffix dynamic-align horizontal-offset="0px">
                     <paper-icon-button icon="my-icons:store" class="dropdown-trigger" suffix></paper-icon-button>
                     <div class="dropdown-content">
-                        <paper-menu>
-                            <paper-icon-item>
-                                <iron-icon icon="my-icons:store" item-icon></iron-icon>
-                                <paper-item-body three-line>
-                                    <div>Branch</div>
-                                    <div secondary>Distance from Zip</div>
-                                    <div secondary>Address</div>
-                                </paper-item-body>
-                                <h4><b>95125</b></h4>
-                            </paper-icon-item>
-                            <paper-icon-item>
-                                <iron-icon icon="my-icons:store" item-icon></iron-icon>
-                                <paper-item-body three-line>
-                                    <div>Branch</div>
-                                    <div secondary>Distance from Zip</div>
-                                    <div secondary>Address</div>
-                                </paper-item-body>
-                                <h4><b>94014</b></h4>
-                            </paper-icon-item>
-                        </paper-menu>
+                        <store-selector udata="{{udata}}"></store-selector>
                     </div>
                 </paper-menu-button>
             </paper-input>
@@ -137,7 +117,7 @@
         <template is="dom-if" if="[[emptyView(count, userCartQuanta, cart, store)]]">
             <template is="dom-if" if="[[store]]">
                 <h4 class="center">
-                    <b>Your Stock Selection is Empty!</b><br>Select a different store:<br><br><menu-select store></menu-select><br><br>Or change your:<br><b>Search Query Keywords</b>
+                    <b>Your Stock Selection is Empty!</b><br>Select a different store:<br><br><store-selector udata="{{udata}}"></store-selector><br>Or change your:<br><b>Search Query Keywords</b>
                 </h4><br>
             </template>
             <template

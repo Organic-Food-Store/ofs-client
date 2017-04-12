@@ -17,10 +17,22 @@
             flex-wrap: wrap;
             justify-content: center;
         }
+
+        paper-material {
+            /*max-width: 600px;*/
+            width: 100%;
+            margin: 16px;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 16px;
+        }
     </style>
     <template>
         <div id="grid">
             <total-price checkout user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
+            <paper-material animated elevation="1">
+                <payment-selector udata="{{udata}}"></payment-selector>
+            </paper-material>
             <!--<a href="/tracking?#9432942389433948" tabindex="-1">-->
         </div>
         <a on-tap="checkout" tabindex="-1">

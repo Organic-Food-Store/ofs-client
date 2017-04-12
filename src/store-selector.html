@@ -1,0 +1,39 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="store-selector">
+    <style include="app-theme">
+        :host {}
+    </style>
+    <template>
+        <firebase-document path="/stores" data="{{storeData}}"></firebase-document>
+        <general-selector repeat-items="[[storeDataParsed]]" selected="{{udata.storeId}}" store></general-selector>
+    </template>
+    <script>
+        Polymer({
+            is: 'store-selector',
+            properties: {
+                storeDataParsed: {
+                    type: Array,
+                    computed: "parsedStoreData(storeData)"
+                }
+            },
+            parsedStoreData: function (data) {
+                var rtn = [];
+                for (var store in data) rtn.push({
+                    "id": store,
+                    "icon": "store",
+                    "firstLine": data[store].branch,
+                    "secondLine": data[store].address,
+                    "thirdLine": this.getTotalStock(data[store].stock),
+                    "xtraData": store
+                });
+                return rtn;
+            },
+            getTotalStock: function (stock) {
+                var total = 0;
+                for (var id in stock) total += stock[id].quantity;
+                return total + " units in Stock";
+            }
+        });
+    </script>
+</dom-module>

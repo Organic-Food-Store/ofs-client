@@ -21,15 +21,15 @@
                 </google-map-marker>
             </template>
         </google-map>
-        <template is="dom-if" if="[[showFab(selectedOrderId, orderData, storeData, udata)]]">
-            <paper-fab-morph vertical-align="bottom" horizontal-align="right">
-                <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
-                <div class="dropdown-content">
-                    <!--Insert Order Selector-->
-                    <total-price tracking user-id="[[orderData.userid]]" store-id="[[orderData.storeId]]" quantities="[[orderData.cart]]"></total-price>
-                </div>
-            </paper-fab-morph>
-        </template>
+        <!--<template is="dom-if" if="[[showFab(selectedOrderId, orderData, storeData, udata)]]">-->
+        <paper-fab-morph vertical-align="bottom" horizontal-align="right">
+            <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
+            <div class="dropdown-content">
+
+                <!--Insert Order Selector, with total price inside it-->
+            </div>
+        </paper-fab-morph>
+        <!--</template>-->
         <!--<paper-textarea label="Tracking Data" value="[[parseJson(selectedOrderId, orderData)]]"></paper-textarea>-->
     </template>
     <script>

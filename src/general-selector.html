@@ -2,71 +2,125 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="general-selector">
     <style include="app-theme">
-         :host {}
+        :host {}
+
+        paper-menu {
+            padding: 5px;
+            max-width: var(--max-general-selector-width);
+            @apply(--general-selector-styles);
+        }
+
+        paper-icon-item {
+            min-width: 250px;
+            text-align: left;
+            @apply(--general-selector-item-styles);
+        }
+
+        paper-icon-item.iron-selected {
+            background-color: var(--light-accent-color);
+            @apply(--shadow-elevation-6dp);
+        }
+
+        paper-icon-item img {
+            display: inline-block;
+            box-sizing: border-box;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+        }
     </style>
     <template>
-        <paper-menu><template is="dom-repeat" items="[[repeatItems]]">
-            <paper-icon-item>
+        <paper-menu attr-for-selected="name" selected="{{selected}}"><template is="dom-repeat" items="[[repeatItems]]">
+            <paper-icon-item on-tap="selectedChanged" name="[[item.id]]">
                 <iron-icon icon="my-icons:[[item.icon]]" item-icon></iron-icon>
-                <paper-item-body two-line>
-                    <div>[[capitalize(item.id)]]</div>
-                    <div secondary>[[item.quanta]] units in Cart</div>
+                <paper-item-body three-line>
+                    <div>[[item.firstLine]]</div>
+                    <div secondary>[[item.secondLine]]</div>
+                    <div secondary>[[item.thirdLine]]</div>
                 </paper-item-body>
-                <div><h4><b>[[parseMoney(item.price)]]</b></h4></div>
+                <template is="dom-if" if="[[item.xtraData]]">
+                    <h4><b>[[item.xtraData]]</b></h4>
+                </template>
+                <template is="dom-if" if="[[item.xtraImg]]">
+                    <img src="./../images/[[item.xtraImg]].png">
+                </template>
             </paper-icon-item>
         </template></paper-menu>
-        <!--<firebase-document path="/users/[[userId]]" data=userData></firebase-document>
-        <firebase-document path="/orders/[[orderId]]" data=orderData></firebase-document>
-        <firebase-document path="/stores" data=stores></firebase-document>
-        <template is="dom-if" if="[[order]]">
-            <div role="listbox">
-                <template is="dom-repeat" items ="[[userData.orderHistory]]">
-                    <paper-icon-item>
-                        <iron-icon icon="icons:mail" item-icon></iron-icon>
-                        <paper-item-body two-line>
-                            <div>[[item]]</div>
-                            <div secondary>[[orderData.timestamp]]</div>
-                        </paper-item-body>
-                        <iron-icon icon="icons:mail"></iron-icon>
-                    </paper-icon-item>
-                </template>
-            </div>
-        </template>
-        <template is="dom-if" if="[[payment]]">
-            <div role="listbox">
-                <template is="dom-repeat" items="[[userData.paymentMethods]]">
-                    <paper-icon-item>
-                        <iron-icon icon="icons:credit-card" item-icon></iron-icon>
-                        <paper-item-body two-line>
-                            <div>[[item.number]]</div>
-                            <div secondary>[[item.cvc]]</div>
-                        </paper-item-body>
-                        <iron-icon icon="icons:credit-card"></iron-icon>
-                    </paper-icon-item>
-                </template>
-            </div>
-        </template>
-        <template is="dom-if" if="[[store]]">
-            <div role="listbox">
-                <template is="dom-repeat" items="[[stores]]">
-                    <paper-icon-item>
-                        <iron-icon icon="icons:store" item-icon></iron-icon>
-                        <paper-item-body two-line>
-                            <div>[[item.branch]]</div>
-                            <div secondary>[[item]]</div>
-                        </paper-item-body>
-                        <iron-icon icon="icons:store"></iron-icon>
-                    </paper-icon-item>
-                </template>
-            </div>
-        </template>-->
+
+
+        <!--<paper-menu>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:store" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>Branch</div>
+                    <div secondary>Distance from Zip</div>
+                    <div secondary>Address</div>
+                </paper-item-body>
+                <h4><b>95125</b></h4>
+            </paper-icon-item>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:store" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>Branch</div>
+                    <div secondary>Distance from Zip</div>
+                    <div secondary>Address</div>
+                </paper-item-body>
+                <h4><b>94014</b></h4>
+            </paper-icon-item>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:credit-card" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>****-****-****-####</div>
+                    <div secondary>Exp: 9/17</div>
+                    <div secondary>Credit</div>
+                </paper-item-body>
+                <img src="./../images/visa.png">
+            </paper-icon-item>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:credit-card" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>****-****-****-####</div>
+                    <div secondary>Exp: 9/17</div>
+                    <div secondary>Credit</div>
+                </paper-item-body>
+                <img src="./../images/visa.png">
+            </paper-icon-item>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:receipt" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>9432942389433949</div>
+                    <div secondary>Status: Delivered</div>
+                    <div secondary>4/11/2017, 1:32:09 AM</div>
+                </paper-item-body>
+                <h4><b>$62.64</b></h4>
+            </paper-icon-item>
+            <paper-icon-item>
+                <iron-icon icon="my-icons:receipt" item-icon></iron-icon>
+                <paper-item-body three-line>
+                    <div>9432942389433948</div>
+                    <div secondary>Status: Delivered</div>
+                    <div secondary>4/11/2017, 1:32:09 AM</div>
+                </paper-item-body>
+                <h4><b>$62.64</b></h4>
+            </paper-icon-item>
+        </paper-menu>-->
     </template>
     <script>
         Polymer({
             is: 'general-selector',
             properties: {
-
+                store: {
+                    type: Boolean,
+                    value: false
+                }, selected: {
+                    type: Number,
+                    notify: true,
+                }
             },
+            selectedChanged: function (data) {
+                if(this.store)
+                    this.fire('stopStoreIdChanges');
+            }
         });
     </script>
 </dom-module>

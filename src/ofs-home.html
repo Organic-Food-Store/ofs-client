@@ -167,12 +167,18 @@
                     value: ""
                 }
             },
+            listeners: {
+                'change': 'userZipChange'
+            },
             ready: function() {
                 var that = this;
                 document.onkeypress = function (e) {(e || window.event).key === "Enter" ? that.goToRoute() : null;};
             },
             goToRoute: function() {
                 (this.route === "store") ? this.set("r.path", "/store") : null;
+            },
+            userZipChange: function () {
+                this.fire('startStoreIdChanges');
             },
             gotValidZip: function (zip) {
                 if (this.zdata && this.zdata[zip]) {

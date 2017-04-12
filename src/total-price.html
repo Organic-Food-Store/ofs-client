@@ -100,9 +100,9 @@
                     </paper-button>
                 </a>
             </template>
-            <template is="dom-if" if="[[notStore(store)]]">
+            <template is="dom-if" if="[[notStoreTracking(store, tracking)]]">
                 <paper-material elevation="2" animated>
-                    <h2><iron-icon id="cart" icon="my-icons:cart"></iron-icon>Cart Total: <b id="boldColoredMoney">[[getTotal(categories, data, quantities)]]</b></h2>
+                    <h2><iron-icon id="cart" icon="my-icons:cart"></iron-icon>Cart Total: <b id="boldColoredMoney">[[cartTotal]]</b></h2>
                 </paper-material>
             </template>
         </paper-material>
@@ -122,14 +122,23 @@
                 }, cart: {
                     type: Boolean,
                     value: false
-                },
-                checkout: {
+                }, checkout: {
                     type: Boolean,
                     value: false
+                }, tracking: {
+                    type: Boolean,
+                    value: false
+                }, cartTotal: {
+                    type: String,
+                    notify: true,
+                    computed: "getTotal(categories, data, quantities)"
                 }
             },
-            notStore: function(store) {
-                return !store;
+            notStore: function(s) {
+                return !s;
+            },
+            notStoreTracking: function(s, t) {
+                return !s && !t;
             },
             getSubCart: function (category, data, quantas) {
                 log("================================GET SUB CART FUNCTION================================");

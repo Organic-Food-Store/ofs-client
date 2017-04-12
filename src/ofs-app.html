@@ -43,27 +43,30 @@
 <link rel="import" href="./../bower_components/granite-clipboard/granite-clipboard.html">
 <link rel="import" href="./../bower_components/paper-fab-transitions/paper-fab-transitions.html">
 <link rel="import" href="./../bower_components/paper-fab-transitions/paper-fab-morph.html">
+<link rel="import" href="./../bower_components/cc-form/cc-form.html">
 <!--<link rel="import" href="">-->
 <link rel="import" href="./app-theme.html">
 <link rel="import" href="./my-icons.html">
 <link rel="import" href="./food-card.html">
 <link rel="import" href="./food-grid.html">
 <link rel="import" href="./total-price.html">
+<link rel="import" href="./general-selector.html">
+<link rel="import" href="./store-selector.html">
+<link rel="import" href="./payment-selector.html">
+<link rel="import" href="./order-selector.html">
 
 <!--
 TODO NOW:
-    - Add Store Selector to cart empty view
-    - Make the Selectors: General, Store, Payment, Order
-    - Put Selectors in Dashboard
+    - Make the Selectors: Order
     - Finish Checkout
         - Add Payment Selection Menu
-        - Create Order with orderId, etc
-        - Should be handled serverside
+        - Should be handled serverside: Create Order with orderId, etc
     - Manage logging in
     - Finalize Readme
     - Properly Implement Address
     - Implement an address validator / zip getter
 REACH:
+    - Properly implement splash screen
     - Implement Paper Tags into the store to Search and Filter after pressing enter
     - Make home page unscrollable on mobile
 -->
@@ -283,11 +286,16 @@ REACH:
                     type: String,
                     notify: true,
                     value: ""
+                }, changeStoreId: {
+                    type: Boolean,
+                    value: true
                 }
             },
             listeners: {
                 'iron-resize': 'setWidthAndHeight',
-                'response': 'handleResponse'
+                'response': 'handleResponse',
+                'stopStoreIdChanges': 'stopStoreIdChanged',
+                'startStoreIdChanges': 'startStoreIdChanged'
             },
             observers: [
                 'routePageChanged(routeData.page)',
@@ -358,6 +366,12 @@ REACH:
                     this.set("existsAjaxReq", event.path[0].requestUrl);
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
+            stopStoreIdChanged: function (event) {
+                this.set("changeStoreId", false);
+            },
+            startStoreIdChanged: function (event) {
+                this.set("changeStoreId", true);
+            },
             zipLatLng: function(zip) {
                 if(zip === "undef-ined")
                     this.set("userData.zipcode", "");
@@ -421,8 +435,8 @@ REACH:
                         for(var food in stock)
                             temp.cart[stores[store]][stock[food]] = "0";
                     }
-                    temp.orderHistory = [];
-                    temp.paymentMethods = [];
+                    temp.paymentMethods = {'-KhSsvI4sS_S7Ppjf5u_': {"cc": "", "cvc":"", "exp": ""}};
+                    temp.orders = {};
                     this.set("userData", temp);
                     this.$.welcomeToast.open();
                 }
@@ -446,7 +460,7 @@ REACH:
                     log("global zipcode is good.");
                 else
                     log("global zipcode is bad!");
-                if(closestId && closestId.storeId && this.userData.zipcode && this.userData.zipcode != "undef-ined") {
+                if(closestId && closestId.storeId && this.userData.zipcode && this.userData.zipcode != "undef-ined" && this.changeStoreId) {
                     log("SETTING STORE ID TO "+closestId.storeId);
                     this.set("userData.storeId", closestId.storeId);
                 }

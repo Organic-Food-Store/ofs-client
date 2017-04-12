@@ -1,0 +1,83 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="app-theme.html">
+<dom-module id="payment-selector">
+    <style include="app-theme">
+        :host {}
+
+        paper-icon-button {
+            --paper-icon-button: {
+                color: var(--darker-alt-accent-color);
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+    <template>
+        <firebase-document id="paymentDb" path="/users/[[udata.id]]/paymentMethods" data="{{paymentData}}"></firebase-document>
+        <firebase-document path="/users/[[udata.id]]/paymentMethods/[[udata.paymentId]]" data="{{selectedData}}"></firebase-document>
+        <general-selector repeat-items="[[paymentDataParsed]]" selected="{{udata.paymentId}}" store></general-selector>
+        <template is="dom-if" if="[[edit(noEdit)]]">
+            <br>
+            <paper-icon-button icon="my-icons:add" on-tap="addCard"></paper-icon-button>
+            <paper-icon-button icon="my-icons:remove" on-tap="removeCard" disabled="[[canRemove]]"></paper-icon-button>
+            <br>
+            <template is="dom-if" if="[[selectedData]]" restamp>
+                <cc-form preview-position="bottom" auto-validate full-name="[[udata.fname]] [[udata.lname]]" card-type="visa" credit-card="{{selectedData.cc}}" expiry-date="{{selectedData.exp}}" cvc="{{selectedData.cvc}}"></cc-form>
+            </template>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            is: 'payment-selector',
+            properties: {
+                noEdit: {
+                    type: Boolean,
+                    value: false
+                },
+                canRemove: {
+                    type: Boolean,
+                    notify: true,
+                    computed: "moreThanOnePayment(paymentData)"
+                },
+                paymentDataParsed: {
+                    type: Array,
+                    computed: "parsedPaymentData(paymentData)"
+                }
+            },
+            addCard: function() {
+                this.set("udata.paymentId", this.$.paymentDb.ref.push({"cc": "", "cvc":"", "exp": ""}).key);
+            },
+            removeCard: function() {
+                var keys = Object.keys(this.paymentData);
+                var index = 0;
+                if(keys[index] == this.udata.paymentId)
+                    index = 1;
+                this.set("udata.paymentMethods."+this.udata.paymentId, null);
+                this.set("udata.paymentId", keys[index]);
+            },
+            moreThanOnePayment: function (data) {
+                return Object.keys(data).length < 2;
+            },
+            parsedPaymentData: function (data) {
+                var rtn = [];
+                for (var card in data) if(card!="new") rtn.push({
+                    "id": card,
+                    "icon": "credit-card",
+                    "firstLine": data[card].cc,
+                    "secondLine": "Expires: "+data[card].exp,
+                    "thirdLine": "Visa Credit Card",
+                    "xtraImg": "visa"
+                });
+                return rtn;
+            },
+            getTotalStock: function (stock) {
+                var total = 0;
+                for (var id in stock) total += stock[id].quantity;
+                return total + " units in Stock";
+            },
+            edit: function (bool) {
+                return !bool;
+            }
+        });
+    </script>
+</dom-module>

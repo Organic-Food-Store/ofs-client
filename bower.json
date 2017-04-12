@@ -46,7 +46,8 @@
     "paper-spinner": "PolymerElements/paper-spinner#^1.2.1",
     "paper-ripple": "PolymerElements/paper-ripple#^1.0.10",
     "neon-animation": "PolymerElements/neon-animation#^1.2.4",
-    "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.2"
+    "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.2",
+    "cc-form": "vic10us/cc-form#^1.0.12"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
