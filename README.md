@@ -4,16 +4,34 @@
 
 ##### Prerequisites
 
-First, install [Polymer CLI](https://github.com/Polymer/polymer-cli) using
-[npm](https://www.npmjs.com) (we assume you have pre-installed [node.js](https://nodejs.org)).
+1. Install [Git](https://git-scm.com/downloads).
 
-	npm install -g bower
-    npm install -g polymer-cli
+2. Install an [active LTS version of Node.js](https://github.com/nodejs/LTS) (4.x or 6.x). The current version (7.x) should work, but is not officially supported.
+
+3. Update npm.
+```
+npm install npm@latest -g
+```
+
+4. Install the latest version of Bower.
+```
+npm install -g bower
+```
+
+5. Install Polymer CLI.
+```
+npm install -g polymer-cli@next
+```
 
 ##### Make a clone of the project on your machine
 
     git clone https://github.com/Organic-Food-Store/ofs-client
+    cd ofs-client
     
+Then do the following commands:
+
+    npm install
+    bower install
 
 ### Start the server
 
