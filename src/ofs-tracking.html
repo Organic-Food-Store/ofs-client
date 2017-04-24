@@ -11,6 +11,7 @@
         <iron-location hash="{{selectedOrderId}}"></iron-location>
         <firebase-document path="/stores" data="{{storeData}}"></firebase-document>
         <firebase-document path="/orders/[[selectedOrderId]]" data="{{selectedOrderUserId}}"></firebase-document>
+        <firebase-document path="/users/[[udata.id]]/orders" data="{{userOrderData}}"></firebase-document>
         <firebase-document path="/users/[[validUserId(selectedOrderUserId)]]/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>
         <paper-input id="trackingIdInput" label="Enter Tracking ID" type="number" raised value="{{selectedOrderId}}"></paper-input>
         <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px">
@@ -18,7 +19,7 @@
                 <google-map-marker title="[[item.info]]" icon="./../images/pins/[[item.pin]].png" latitude="[[item.lat]]" longitude="[[item.lng]]"></google-map-marker>
             </template>
         </google-map>
-        <template is="dom-if" if="[[showFab(orderData)]]">
+        <template is="dom-if" if="[[showFab(userOrderData)]]">
             <paper-fab-morph vertical-align="bottom" horizontal-align="right">
                 <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
                 <order-selector class="dropdown-content" udata="{{udata}}" selected-order-id="{{selectedOrderId}}"></order-selector>
