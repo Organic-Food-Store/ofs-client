@@ -10,11 +10,17 @@
 
         paper-icon-item {
             --paper-item-icon-width: 36px;
+            @apply(--total-price-styles);
+            color: var(--alt-text-color);
+        }
+
+        paper-menu {
+            @apply(--total-price-styles);
         }
 
         paper-icon-item.iron-selected {
             @apply(--shadow-elevation-6dp);
-            background-color: var(--secondary-background-color);
+            background-color: var(--light-alt-accent-color);
             z-index: 2;
         }
 
@@ -42,6 +48,7 @@
             display: inline-block;
             width: 90%;
             text-align: center;
+            @apply(--total-price-styles);
         }
 
         #tabelize {
@@ -60,6 +67,10 @@
             width: 35px;
             height: 35px;
         }
+
+        h3 {
+            color: inherit;
+        }
     </style>
     <template>
         <firebase-document path="/categories" data="{{categories}}"> </firebase-document>
@@ -68,9 +79,9 @@
         <paper-material id="tabelize" elevation="1" animated class$="[[passedDownClass]]">
             <paper-menu><template is="dom-repeat" items="[[getObjectValues(categories)]]">
                 <paper-submenu disabled="[[emptySubCart(item, data, quantities)]]">
-                    <paper-icon-item class="menu-trigger">
+                    <paper-icon-item class="menu-trigger" disabled="[[shouldDisable(item, data, quantities)]]">
                         <iron-icon icon="my-icons:tag" item-icon></iron-icon>
-                        <paper-item-body><div><h3>[[capitalize(item)]]<template is="dom-if" if="[[notStore(store)]]"> Total</template></h3></div></paper-item-body>
+                        <paper-item-body><div><h3>[[capitalize(item)]]<template is="dom-if" if="[[notStore(store)]]"></template></h3></div></paper-item-body>
                         <template is="dom-if" if="[[store]]">
                             <div><h3><b>[[getCategoryTotalQuanta(item, data, quantities)]]</b></h3></div>
                         </template>
@@ -140,6 +151,9 @@
             notStoreTracking: function(s, t) {
                 return !s && !t;
             },
+            shouldDisable: function (item, data, quantities) {
+                return this.getCategoryTotalQuanta(item, data, quantities) == 0;
+            },
             getSubCart: function (category, data, quantas) {
                 log("================================GET SUB CART FUNCTION================================");
                 log("getSubCart: category");
@@ -148,10 +162,10 @@
                 log(quantas);
                 log("getSubCart: data");
                 log(data);
-                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
-                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
+                log("!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
                 var rtn = [];
-                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return rtn;
+                if (!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return rtn;
                 for (var i in data)
                     if (data[i].category === category && isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0)
                         rtn.push({"id": data[i].id, "quanta": quantas[this.storeId][data[i].id], "price": parseInt(quantas[this.storeId][data[i].id]) * parseFloat(data[i].price)});
@@ -174,10 +188,12 @@
                 log(quantas);
                 log("getCategoryTotal: data");
                 log(data);
-                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
-                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
+                log("getCategoryTotal: this.storeId");
+                log(this.storeId);
+                log("!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
                 var total = 0;
-                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return parseMoney(total);
+                if (!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return parseMoney(total);
                 for (var i in data)
                     if (isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0 && (category === "all" || data[i].category == category))
                         total += data[i].price * quantas[this.storeId][data[i].id];
@@ -196,10 +212,10 @@
                 log(quantas);
                 log("getCategoryTotalQuanta: data");
                 log(data);
-                log("!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
-                log(!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
+                log("!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object");
+                log(!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object);
                 var total = 0;
-                if (!category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return total;
+                if (!this.storeId || !category || !quantas || !data || Object.keys(data).length === 0 && data.constructor === Object) return total;
                 for (var i in data)
                     if (isInt(quantas[this.storeId][data[i].id]) && parseInt(quantas[this.storeId][data[i].id]) > 0 && (category === "all" || data[i].category == category))
                         total += 1; //quantas[this.storeId][data[i].id];

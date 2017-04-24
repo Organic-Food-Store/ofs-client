@@ -2,7 +2,7 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="ofs-checkout">
     <style include="app-theme">
-         :host {
+        :host {
             display: block;
             padding: 10px;
         }
@@ -19,36 +19,44 @@
         }
 
         paper-material {
-            /*max-width: 600px;*/
             width: 100%;
             margin: 16px;
             box-sizing: border-box;
             text-align: center;
             padding: 16px;
         }
+
+        @media screen and (max-width: 390px) {
+            payment-selector {
+                --general-selector-item-styles: {
+                    max-width: 257px;
+                    box-sizing: border-box;
+                    min-width: 0px;
+                    margin: auto;
+                }
+            }
+        }
     </style>
     <template>
+        <iron-ajax id="checkoutAjax" url="https://organic-food-store.herokuapp.com/api/checkout/[[udata.id]]" handle-as="json" last-response="{{trackId}}" on-response="handleCheckout"></iron-ajax>
         <div id="grid">
             <total-price checkout user-id="[[udata.id]]" store-id="[[udata.storeId]]" quantities="[[udata.cart]]"></total-price>
             <paper-material animated elevation="1">
-                <payment-selector udata="{{udata}}"></payment-selector>
+                <payment-selector udata="{{udata}}" not-valid="{{notValidForm}}"></payment-selector>
             </paper-material>
-            <!--<a href="/tracking?#9432942389433948" tabindex="-1">-->
         </div>
-        <a on-tap="checkout" tabindex="-1">
-            <paper-button raised>
-                <!--<iron-icon icon="my-icons:credit-card"></iron-icon>-->
-                <iron-icon icon="my-icons:receipt"></iron-icon>
-                Checkout
-            </paper-button>
-        </a>
+        <paper-button on-tap="checkout" raised disabled="[[notValidForm]]">
+            <iron-icon icon="my-icons:receipt"></iron-icon>Checkout
+        </paper-button>
     </template>
     <script>
         Polymer({
             is: 'ofs-checkout',
             checkout: function() {
-                this.clearCart();
-                window.location = "tracking#9432942389433948";
+                this.$.checkoutAjax.generateRequest();
+            },
+            handleCheckout: function (data) {
+                window.location = "tracking#"+this.trackId.trackingOrder;
             },
             capitalize: function (str) {
                 return capitalize(str);

@@ -2,35 +2,28 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="ofs-tracking">
     <style include="app-theme">
-         :host {
+        :host {
             display: block;
             padding: 10px;
         }
     </style>
     <template>
-        <firebase-document path="/stores" data="{{storeData}}"></firebase-document>
-        <firebase-document path="/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>
-        <!--<firebase-document path="/orders/[[selectedOrderId]]" data="{{orderUserId}}"></firebase-document>-->
-        <!--<firebase-document path="/users/[[orderUserId]]/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>-->
         <iron-location hash="{{selectedOrderId}}"></iron-location>
+        <firebase-document path="/stores" data="{{storeData}}"></firebase-document>
+        <firebase-document path="/orders/[[selectedOrderId]]" data="{{selectedOrderUserId}}"></firebase-document>
+        <firebase-document path="/users/[[validUserId(selectedOrderUserId)]]/orders/[[selectedOrderId]]" data="{{orderData}}"></firebase-document>
         <paper-input id="trackingIdInput" label="Enter Tracking ID" type="number" raised value="{{selectedOrderId}}"></paper-input>
         <google-map id="gmap" single-info-window no-auto-tilt disable-default-ui zoom="{{mapZoom}}" style="height: [[height]]px">
             <template id="pins" is="dom-repeat" items="[[pinData]]">
-                <google-map-marker title="[[item.info]]" icon="./../images/pins/[[item.pin]].png" latitude="[[item.lat]]" longitude="[[item.lng]]">
-                    <p>[[item.info]]</p>
-                </google-map-marker>
+                <google-map-marker title="[[item.info]]" icon="./../images/pins/[[item.pin]].png" latitude="[[item.lat]]" longitude="[[item.lng]]"></google-map-marker>
             </template>
         </google-map>
-        <!--<template is="dom-if" if="[[showFab(selectedOrderId, orderData, storeData, udata)]]">-->
-        <paper-fab-morph vertical-align="bottom" horizontal-align="right">
-            <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
-            <div class="dropdown-content">
-
-                <!--Insert Order Selector, with total price inside it-->
-            </div>
-        </paper-fab-morph>
-        <!--</template>-->
-        <!--<paper-textarea label="Tracking Data" value="[[parseJson(selectedOrderId, orderData)]]"></paper-textarea>-->
+        <template is="dom-if" if="[[showFab(orderData)]]">
+            <paper-fab-morph vertical-align="bottom" horizontal-align="right">
+                <paper-fab icon="my-icons:orders" class="dropdown-trigger"></paper-fab>
+                <order-selector class="dropdown-content" udata="{{udata}}" selected-order-id="{{selectedOrderId}}"></order-selector>
+            </paper-fab-morph>
+        </template>
     </template>
     <script>
         Polymer({
@@ -38,6 +31,11 @@
             properties: {
                 h: {
                     observer: "getHeight"
+                },
+                selectedOrderUserId: {
+                    type: String,
+                    notify: true,
+                    value: ""
                 },
                 height: {
                     type: Number,
@@ -126,13 +124,18 @@
                     });
                 return rtn;
             },
-            showFab: function (selectedOrderId, orderData, storeData, udata) {
-                return this.goodOrder();
+            showFab: function (orderData) {
+                return !(Object.keys(orderData).length === 0 && orderData.constructor === Object);
             },
             goodOrder: function () {
                 return (!(Object.keys(this.orderData).length === 0 && this.orderData.constructor === Object) &&
                     !(Object.keys(this.storeData).length === 0 && this.storeData.constructor === Object) &&
                     !(!this.selectedOrderId));
+            },
+            validUserId: function (id) {
+                if(typeof id == "string" && id.length > 0)
+                    return id;
+                return "";
             },
             capitalize: function (str) {
                 return capitalize(str);

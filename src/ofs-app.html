@@ -52,25 +52,19 @@
 <link rel="import" href="./total-price.html">
 <link rel="import" href="./general-selector.html">
 <link rel="import" href="./store-selector.html">
-<link rel="import" href="./payment-selector.html">
 <link rel="import" href="./order-selector.html">
-
+<link rel="import" href="./payment-selector.html">
 <!--
 TODO NOW:
-    - Make the Selectors: Order
-    - Finish Checkout
-        - Add Payment Selection Menu
-        - Should be handled serverside: Create Order with orderId, etc
-    - Manage logging in
+    - Fix server side tracking
     - Finalize Readme
+    - Manage logging in
     - Properly Implement Address
     - Implement an address validator / zip getter
-REACH:
     - Properly implement splash screen
     - Implement Paper Tags into the store to Search and Filter after pressing enter
     - Make home page unscrollable on mobile
 -->
-
 <dom-module id="ofs-app">
     <style include="app-theme">
         paper-menu {
@@ -109,80 +103,54 @@ REACH:
             app-header-layout app-toolbar {
                 padding: 0px 4px;
             }
-
             #mainTitle {
                 margin-left: 2px;
             }
         }
     </style>
     <template>
-        <firebase-app
-            auth-domain="organic-food-store.firebaseapp.com"
-            database-url="https://organic-food-store.firebaseio.com/"
-            api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg">
-        </firebase-app>
-        <firebase-auth
-            id="auth"
-            user="{{user}}"
-            provider="google"
-            signed-in="{{loggedIn}}"
-            status-known="{{userStatus}}"
-            on-error="handleError">
-        </firebase-auth>
-        <firebase-document
-            path="/users/{{user.uid}}"
-            data="{{userData}}">
-        </firebase-document>
-        <firebase-document
-            path="/stock"
-            data="{{latestStock}}">
-        </firebase-document>
-        <firebase-document
-            path="/branches"
-            data="{{latestStores}}">
-        </firebase-document>
+        <firebase-app auth-domain="organic-food-store.firebaseapp.com" database-url="https://organic-food-store.firebaseio.com/" api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg"> </firebase-app>
+        <firebase-auth id="auth" user="{{user}}" provider="google" signed-in="{{loggedIn}}" status-known="{{userStatus}}" on-error="handleError"> </firebase-auth>
+        <firebase-document path="/users/{{user.uid}}" data="{{userData}}"> </firebase-document>
+        <firebase-document path="/stock" data="{{latestStock}}"> </firebase-document>
+        <firebase-document path="/branches" data="{{latestStores}}"> </firebase-document>
         <iron-ajax id="zipsAjax" auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
         <iron-ajax id="userExistingAjax" auto url="https://organic-food-store.herokuapp.com/api/userExists/[[user.uid]]" handle-as="json" last-response="{{userExists}}"></iron-ajax>
         <iron-ajax id="closestStoreAjax" auto url="https://organic-food-store.herokuapp.com/api/closestStore/[[userData.zipcode]]" handle-as="json" last-response="{{closestStoreId}}"></iron-ajax>
-        <!--<iron-ajax id="zipToAddressAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?latlng=[[userData.ziplat]],[[userData.ziplong]]" handle-as="json" last-response="{{zipAddrJsonData}}"></iron-ajax>
-        <iron-ajax id="addressToCoordsAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?address=[[userData.address]]" handle-as="json" last-response="{{addrCordJsonData}}"></iron-ajax>-->
+        <!--<iron-ajax id="zipToAddressAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?latlng=[[userData.ziplat]],[[userData.ziplong]]" handle-as="json" last-response="{{zipAddrJsonData}}"></iron-ajax>-->
+        <!--<iron-ajax id="addressToCoordsAjax" auto url="https://maps.googleapis.com/maps/api/geocode/json?address=[[userData.address]]" handle-as="json" last-response="{{addrCordJsonData}}"></iron-ajax>-->
         <app-location route="{{route}}"></app-location>
         <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
         <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
             <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
-                <app-toolbar elevation="2"><iron-icon id="drawerMenuIcon" icon="my-icons:menu"></iron-icon>Menu</app-toolbar>
-                <paper-menu id="drawerMenu" selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                <app-toolbar elevation="2">
+                    <iron-icon id="drawerMenuIcon" icon="my-icons:menu"></iron-icon>Menu</app-toolbar>
+                <paper-menu id="drawerMenu" selected="[[page]]" attr-for-selected="name"
+                    class="drawer-list" role="navigation">
                     <a name="home" href="/home" tabindex="-1">
                         <paper-icon-item>
-                            <iron-icon icon="my-icons:home" item-icon></iron-icon>Home
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:home" item-icon></iron-icon>Home</paper-icon-item>
                     </a>
                     <a name="dashboard" href="/dashboard" tabindex="-1">
                         <paper-icon-item>
-                            <iron-icon icon="my-icons:dashboard" item-icon></iron-icon>Dashboard
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:dashboard" item-icon></iron-icon>Dashboard</paper-icon-item>
                     </a>
                     <a name="store" href="/store" tabindex="-1">
                         <paper-icon-item>
-                            <iron-icon icon="my-icons:store" item-icon></iron-icon>Store
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:store" item-icon></iron-icon>Store</paper-icon-item>
                     </a>
                     <a name="tracking" href="/tracking" tabindex="-1">
                         <paper-icon-item>
                             <!--<img src="./../images/droneIcon.svg" item-icon id="droneIcon">-->
-                            <iron-icon icon="my-icons:tracking" item-icon></iron-icon>
-                            Tracking
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:tracking" item-icon></iron-icon>Tracking</paper-icon-item>
                     </a>
                     <a name="cart" href="/cart" tabindex="-1">
                         <paper-icon-item>
-                            <iron-icon icon="my-icons:cart" item-icon></iron-icon>Cart
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:cart" item-icon></iron-icon>Cart</paper-icon-item>
                     </a>
                     <a name="about" href="/about" tabindex="-1">
                         <paper-icon-item>
-                            <iron-icon icon="my-icons:info" item-icon></iron-icon>About
-                        </paper-icon-item>
+                            <iron-icon icon="my-icons:info" item-icon></iron-icon>About</paper-icon-item>
                     </a>
                 </paper-menu>
             </app-drawer>
@@ -200,14 +168,11 @@ REACH:
                         <div id="mainTitle" main-title>
                             <template is="dom-if" if="[[bigEnough(currentWidth)]]">OFS | </template>[[capitalize(page)]]</div>
                         <paper-button on-tap="handleLogin" raised>
-                            <iron-icon icon="my-icons:[[userAction]]"></iron-icon>[[capitalize(userAction)]]
-                        </paper-button>
+                            <iron-icon icon="my-icons:[[userAction]]"></iron-icon>[[capitalize(userAction)]] </paper-button>
                         <template is="dom-if" if="[[showDashboard(userData.fname, currentWidth)]]">
                             <a href="/dashboard" tabindex="-1">
                                 <paper-button raised>
-                                    <iron-icon icon="my-icons:dashboard"></iron-icon>
-                                    Hi, [[capitalize(userData.fname)]]!
-                                </paper-button>
+                                    <iron-icon icon="my-icons:dashboard"></iron-icon> Hi, [[capitalize(userData.fname)]]! </paper-button>
                             </a>
                         </template>
                         <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
@@ -220,18 +185,13 @@ REACH:
                     <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
                     <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-cart>
                     <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-checkout>
-                    <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
+                    <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking> <!-- selected-order-id="{{userData.orderId}}" -->
                     <ofs-404 name="404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-404>
                 </iron-pages>
-                <!--<template is="dom-if" if="[[isHome(page)]]">
-                    <paper-textarea label="Current Zip" value="{{userData.zipcode}}"></paper-textarea>
-                    <paper-textarea label="Incoming Firebase Data" value="[[parseJson(user, userData, userDataBackup)]]"></paper-textarea>
-                </template>-->
             </app-header-layout>
         </app-drawer-layout>
         <paper-toast id="welcomeToast" text="Welcome New Customer!"></paper-toast>
         <paper-toast id="loginToast" text="Signing In is in Development. You can still use the website normally."></paper-toast>
-        <!--<paper-fab icon="add"></paper-fab>-->
     </template>
     <script>
         Polymer({
@@ -241,52 +201,65 @@ REACH:
                     type: Object,
                     notify: true,
                     value: {}
-                }, makeBackup: {
+                },
+                makeBackup: {
                     type: Boolean,
                     notify: true,
                     value: true
-                }, userData: {
+                },
+                userData: {
                     type: Object,
                     notify: true,
-                }, userAction: {
+                },
+                userAction: {
                     type: String,
                     notify: true,
                     computed: "getUserAction(user, loggedIn, userStatus)"
-                }, existsAjaxReq: {
+                },
+                existsAjaxReq: {
                     type: String,
                     notify: true,
                     value: ""
-                }, storeAjaxReq: {
+                },
+                storeAjaxReq: {
                     type: String,
                     notify: true,
                     value: ""
-                }, page: {
+                },
+                page: {
                     type: String,
                     notify: true,
                     reflectToAttribute: true,
                     observer: "pageChanged"
-                }, backPage: {
+                },
+                backPage: {
                     type: String,
                     computed: "goBack(page)"
-                }, responsiveWidth: {
+                },
+                responsiveWidth: {
                     type: Number,
                     notify: true,
                     computed: "getResponsiveWidth(page)"
-                }, currentHeight: {
+                },
+                currentHeight: {
                     type: Number,
                     notify: true
-                }, currentWidth: {
+                },
+                currentWidth: {
                     type: Number,
                     notify: true
-                }, drawerAlign: {
+                },
+                drawerAlign: {
                     type: String,
                     notify: true,
                     computed: "getDrawerAlignment(currentWidth, responsiveWidth, page)"
-                }, transparent: {
+                },
+                transparent: {
                     type: String,
                     notify: true,
                     value: ""
-                }, changeStoreId: {
+                },
+                changeStoreId: {
                     type: Boolean,
                     value: true
                 }
@@ -297,15 +270,12 @@ REACH:
                 'stopStoreIdChanges': 'stopStoreIdChanged',
                 'startStoreIdChanges': 'startStoreIdChanged'
             },
-            observers: [
-                'routePageChanged(routeData.page)',
-                'zipLatLng(userData.zipcode)',
+            observers: ['routePageChanged(routeData.page)', 'zipLatLng(userData.zipcode)',
                 'addrLatLng(userData.address)',
                 'setUpNewUser(userExists, existsAjaxReq, user, latestStores, latestStock)',
-                'setNewStore(closestStoreId, storeAjaxReq, userData.zipcode)',
-                'keepAnonBackup(userData.*)'
+                'setNewStore(closestStoreId, storeAjaxReq, userData.zipcode)', 'keepAnonBackup(userData.*)'
             ],
-            ready: function() {},
+            ready: function () {},
             handleLogin: function () {
                 // alert("Logging in is in development.\n\nYou can still use the website normally.\n");
                 this.$.loginToast.open();
@@ -360,10 +330,8 @@ REACH:
                 log(event);
                 log(event.path[0].id);
                 log(event.path[0].requestUrl);
-                if(event.path[0].id === "closestStoreAjax")
-                    this.set("storeAjaxReq", event.path[0].requestUrl);
-                if(event.path[0].id === "userExistingAjax")
-                    this.set("existsAjaxReq", event.path[0].requestUrl);
+                if (event.path[0].id === "closestStoreAjax") this.set("storeAjaxReq", event.path[0].requestUrl);
+                if (event.path[0].id === "userExistingAjax") this.set("existsAjaxReq", event.path[0].requestUrl);
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
             stopStoreIdChanged: function (event) {
@@ -372,26 +340,23 @@ REACH:
             startStoreIdChanged: function (event) {
                 this.set("changeStoreId", true);
             },
-            zipLatLng: function(zip) {
-                if(zip === "undef-ined")
-                    this.set("userData.zipcode", "");
+            zipLatLng: function (zip) {
+                if (zip === "undef-ined") this.set("userData.zipcode", "");
                 log("zip");
                 log(zip);
                 log("this.zipsJsonData");
                 log(this.zipsJsonData);
-                if(this.zipsJsonData) {
+                if (this.zipsJsonData) {
                     log("this.zipsJsonData[zip]");
                     log(this.zipsJsonData[zip]);
                 }
-                if(this.zipsJsonData && this.zipsJsonData[zip]) {
+                if (this.zipsJsonData && this.zipsJsonData[zip]) {
                     log("SETTING NEW ZIP LAT LNG DATA...")
                     this.set("userData.ziplat", this.zipsJsonData[zip].LAT);
                     this.set("userData.ziplng", this.zipsJsonData[zip].LNG);
                 }
             },
-            addrLatLng: function(addr) {
-
-            },
+            addrLatLng: function (addr) {},
             setUpNewUser: function (exists, URL, user, stores, stock) { // Deal with either on serverside, or somewhere else so that all the data exists
                 log("===========================NEW USER EXIST CHECK===========================");
                 log("exists");
@@ -404,21 +369,21 @@ REACH:
                 log(stores);
                 log("stock");
                 log(stock);
-                if(exists.exists === false)
-                    log("exists.exists === false");
-                if(exists && this.user && exists.exists === false) {
-                    log("GOTTA ADD "+this.user.uid+"! CREATING NEW USER...");
+                if (exists && exists.exists === false) log("exists.exists === false");
+                if (exists && this.user && exists.exists === false) {
+                    log("GOTTA ADD " + this.user.uid + "! CREATING NEW USER...");
                     temp = {};
                     temp.id = user.uid;
                     temp.email = "";
                     temp.photo = "./../images/anon.png";
                     temp.fname = "Customer";
                     temp.lname = "";
-                    if(!user.isAnonymous) {
+                    if (!user.isAnonymous) {
                         temp.email = user.email;
                         temp.photo = user.photoURL;
                         temp.fname = user.displayName.split(' ')[0];
-                        temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length-1] : "";
+                        temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[
+                            user.displayName.split(' ').length - 1] : "";
                     }
                     temp.address = "";
                     temp.addrlat = "";
@@ -426,17 +391,24 @@ REACH:
                     temp.zipcode = "";
                     temp.ziplat = "";
                     temp.ziplng = "";
-                    temp.storeId = "";
                     temp.storelat = "";
                     temp.storelng = "";
+                    temp.storeId = "95125";
                     temp.cart = {};
-                    for(var store in stores) {
+                    for (var store in stores) {
                         temp.cart[stores[store]] = {};
-                        for(var food in stock)
-                            temp.cart[stores[store]][stock[food]] = "0";
+                        for (var food in stock) temp.cart[stores[store]][stock[food]] = "0";
                     }
-                    temp.paymentMethods = {'-KhSsvI4sS_S7Ppjf5u_': {"cc": "", "cvc":"", "exp": ""}};
+                    temp.paymentMethods = {
+                        '-KhSsvI4sS_S7Ppjf5u_': {
+                            "cc": "",
+                            "cvc": "",
+                            "exp": ""
+                        }
+                    };
+                    temp.paymentId = "-KhSsvI4sS_S7Ppjf5u_";
                     temp.orders = {};
+                    temp.orderId = "";
                     this.set("userData", temp);
                     this.$.welcomeToast.open();
                 }
@@ -452,34 +424,32 @@ REACH:
                 log(zipcode);
                 log("this.userData.zipcode");
                 log(this.userData.zipcode);
-                if(zipcode && zipcode != "undef-ined")
-                    log("passed in zipcode is good.");
-                else
-                    log("passed in zipcode is bad!");
-                if(this.userData.zipcode && this.userData.zipcode != "undef-ined")
-                    log("global zipcode is good.");
-                else
-                    log("global zipcode is bad!");
-                if(closestId && closestId.storeId && this.userData.zipcode && this.userData.zipcode != "undef-ined" && this.changeStoreId) {
-                    log("SETTING STORE ID TO "+closestId.storeId);
+                if (zipcode && zipcode != "undef-ined") log("passed in zipcode is good.");
+                else log("passed in zipcode is bad!");
+                if (this.userData.zipcode && this.userData.zipcode != "undef-ined") log(
+                    "global zipcode is good.");
+                else log("global zipcode is bad!");
+                if (closestId && closestId.storeId && this.userData.zipcode && this.userData.zipcode !=
+                    "undef-ined" && this.changeStoreId) {
+                    log("SETTING STORE ID TO " + closestId.storeId);
                     this.set("userData.storeId", closestId.storeId);
                 }
-                if(this.zipsJsonData && this.zipsJsonData[this.userData.storeId]) {
+                if (this.zipsJsonData && this.zipsJsonData[this.userData.storeId]) {
                     log("SETTING NEW STORE LAT LNG DATA...")
                     this.set("userData.storelat", this.zipsJsonData[this.userData.storeId].LAT);
                     this.set("userData.storelng", this.zipsJsonData[this.userData.storeId].LNG);
                 }
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
-            keepAnonBackup: function(changeRecord) {
+            keepAnonBackup: function (changeRecord) {
                 log("===========================ANONYMOUS BACKING UP===========================");
                 log("changeRecord");
                 log(changeRecord);
-                log("changeRecord Path Change - " + changeRecord.path+': '); //+ parseJson(changeRecord.value));
+                log("changeRecord Path Change - " + changeRecord.path + ': '); //+ parseJson(changeRecord.value));
                 log(changeRecord.value);
                 log("this.user");
                 log(this.user);
-                if(this.user) {
+                if (this.user) {
                     log("this.user.uid");
                     log(this.user.uid);
                     log("this.user.isAnonymous");
@@ -489,9 +459,9 @@ REACH:
                 log(this.loggedIn);
                 log("this.userStatus");
                 log(this.userStatus);
-                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
+                if (this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
                     log("MAKING A BACKUP...");
-                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
+                if (this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
                     this.set("userDataBackup", this.userData);
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
@@ -499,7 +469,7 @@ REACH:
                 log("==========================USER STATUS MONITORING==========================");
                 log("user");
                 log(user);
-                if(user) {
+                if (user) {
                     log("user.uid");
                     log(user.uid);
                     log("user.isAnonymous");
@@ -509,14 +479,11 @@ REACH:
                 log(loggedIn);
                 log("userStatus");
                 log(userStatus);
-                if(!this.user && !loggedIn && userStatus)
-                    log("SIGNING IN ANONYMOUSLY...");
-                if(!this.user && !loggedIn && userStatus)
-                    this.$.auth.signInAnonymously();
+                if (!this.user && !loggedIn && userStatus) log("SIGNING IN ANONYMOUSLY...");
+                if (!this.user && !loggedIn && userStatus) this.$.auth.signInAnonymously();
                 // if(user && loggedIn && userStatus && user.isAnonymous) return "You're Anonymous";
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                if(user && loggedIn && userStatus && !user.isAnonymous)
-                    return "sign out";
+                if (user && loggedIn && userStatus && !user.isAnonymous) return "sign out";
                 return "sign in";
             },
             handleError: function (event) {
@@ -530,20 +497,19 @@ REACH:
                 this.set('currentWidth', this.$$("app-drawer-layout").clientWidth);
                 this.set('currentHeight', this.$$("app-drawer-layout").clientHeight);
             },
-            bigEnough: function(width) {
+            bigEnough: function (width) {
                 return width > 625;
             },
             showDashboard: function (name, width) {
                 return name && this.bigEnough(width);
             },
             getResponsiveWidth(page) {
-                if(page === "home")
-                    return 9999;
+                if (page === "home") return 9999;
                 return 1000;
             },
             goBack: function (page) {
                 var order = ["dashboard ", "about", "home", "dashboard", "tracking", "dashboard ", "store", "cart", "checkout"];
-                return order[order.indexOf(page)-1];
+                return order[order.indexOf(page) - 1];
             },
             getDrawerAlignment: function (width, limit, page) {
                 return width > 1000 ? "left" : "right";
@@ -551,12 +517,9 @@ REACH:
             },
             routePageChanged: function (page) {
                 this.page = page || 'home';
-                if(this.page === "home")
-                    this.set("transparent", "transparent");
-                else
-                    this.set("transparent", "");
-                if (!this.$.drawer.persistent)
-                    this.$.drawer.close();
+                if (this.page === "home") this.set("transparent", "transparent");
+                else this.set("transparent", "");
+                if (!this.$.drawer.persistent) this.$.drawer.close();
             },
             pageChanged: function (page) {
                 var resolvedPageUrl = this.resolveUrl('ofs-' + page + '.html');
@@ -577,17 +540,16 @@ REACH:
             isInt: function (value) {
                 return isInt(value);
             },
-            flattenJson: function(data) {
+            flattenJson: function (data) {
                 return flattenJson(data);
             },
             clearCart: function () {
                 var stores = this.latestStores;
                 var stock = this.latestStock;
                 var temp = {};
-                for(var store in stores) {
+                for (var store in stores) {
                     temp[stores[store]] = {};
-                    for(var food in stock)
-                        temp[stores[store]][stock[food]] = "0";
+                    for (var food in stock) temp[stores[store]][stock[food]] = "0";
                 }
                 this.set("udata.cart", temp);
             },
@@ -596,7 +558,7 @@ REACH:
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
-                return items.reduce(function(acc, item) {
+                return items.reduce(function (acc, item) {
                     return acc + "\nObject\n" + JSON.stringify(item, null, 4);
                 }, "");
             }
@@ -604,44 +566,45 @@ REACH:
 
         function parseJson() {
             var items = [].slice.apply(arguments);
-            return items.reduce(function(acc, item) {
+            return items.reduce(function (acc, item) {
                 return acc + "\nObject\n" + JSON.stringify(item, null, 4);
             }, "");
         }
-
         var debug = false;
-        function log(message) {
-            if(debug) console.log(message);
-        }
 
-        var formatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 2, });
+        function log(message) {
+            if (debug) console.log(message);
+        }
+        var formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+
         function parseMoney(m) {
             return formatter.format(m);
         }
 
         function getObjectKeys(obj) {
-            if(!obj) return [];
+            if (!obj) return [];
             return Object.keys(obj);
         }
 
         function getObjectValues(obj) {
-            if(!obj) return [];
+            if (!obj) return [];
             return Object.values(obj);
         }
 
         function isInt(value) {
-            if((""+value).toLowerCase() == "[object object]")
-                return false;
-            return !isNaN(value) &&
-                parseInt(Number(value)) == value &&
-                !isNaN(parseInt(value, 10));
+            if (("" + value).toLowerCase() == "[object object]") return false;
+            return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
         }
 
         function capitalize(string) {
-            if(!string) return "";
+            if (!string) return "";
             var arr = string.split(" ");
-            for(str in arr)
-                if(arr[str].length > 2 && arr[str].toLowerCase() != "the" && arr[str].toLowerCase() != "and") {
+            for (str in arr)
+                if (arr[str].length > 2 && arr[str].toLowerCase() != "the" && arr[str].toLowerCase() != "and") {
                     arr[str] = arr[str].replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
                     arr[str] = arr[str].charAt(0).toUpperCase() + arr[str].slice(1);
                     arr[str] = arr[str].trim();

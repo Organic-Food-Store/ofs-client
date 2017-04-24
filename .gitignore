@@ -1,5 +1,6 @@
 bower_components/
 build/
+backups/
 node_modules/
 firebase-debug.log
 npm-debug.log

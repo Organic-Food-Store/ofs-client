@@ -81,6 +81,7 @@
         }
     </style>
     <template>
+        <firebase-document path="/users/[[udata.id]]/orders" data="{{orderData}}"></firebase-document>
         <div class="grid">
             <paper-material animated elevation="1">
                 <iron-image alt="Your Profile Picture" src="[[udata.photo]]" preload fade sizing="cover"></iron-image>
@@ -97,11 +98,13 @@
             <paper-material animated elevation="1">
                 <store-selector udata="{{udata}}"></store-selector>
             </paper-material>
+            <template is="dom-if" if="{{ordersExist(orderData)}}">
+                <paper-material animated elevation="1">
+                    <order-selector udata="{{udata}}" selected-order-id="{{udata.orderId}}"></order-selector>
+                </paper-material>
+            </template>
             <paper-material animated elevation="1">
                 <payment-selector udata="{{udata}}"></payment-selector>
-            </paper-material>
-            <paper-material animated elevation="1">
-                <order-selector udata="{{udata}}"></order-selector>
             </paper-material>
         </div>
         <paper-toast id="copiedToast" text="Copied ID to Clipboard!"></paper-toast>
@@ -111,6 +114,9 @@
             is: 'ofs-dashboard',
             listeners: {
                 'change': 'handleChange'
+            },
+            ordersExist: function (data) {
+                return !(Object.keys(data).length === 0 && data.constructor === Object);
             },
             handleCopy: function (e) {
                 this.$.copiedToast.open();

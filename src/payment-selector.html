@@ -2,7 +2,7 @@
 <link rel="import" href="app-theme.html">
 <dom-module id="payment-selector">
     <style include="app-theme">
-        :host {}
+         :host {}
 
         paper-icon-button {
             --paper-icon-button: {
@@ -11,28 +11,40 @@
                 height: 50px;
             }
         }
+
+        @media only screen and (min-width: 1000px) {
+            paper-toast {
+                margin-left: 191px;
+                margin-bottom: 16px;
+            }
+        }
     </style>
     <template>
         <firebase-document id="paymentDb" path="/users/[[udata.id]]/paymentMethods" data="{{paymentData}}"></firebase-document>
         <firebase-document path="/users/[[udata.id]]/paymentMethods/[[udata.paymentId]]" data="{{selectedData}}"></firebase-document>
         <general-selector repeat-items="[[paymentDataParsed]]" selected="{{udata.paymentId}}" store></general-selector>
-        <template is="dom-if" if="[[edit(noEdit)]]">
-            <br>
-            <paper-icon-button icon="my-icons:add" on-tap="addCard"></paper-icon-button>
-            <paper-icon-button icon="my-icons:remove" on-tap="removeCard" disabled="[[canRemove]]"></paper-icon-button>
-            <br>
-            <template is="dom-if" if="[[selectedData]]" restamp>
-                <cc-form preview-position="bottom" auto-validate full-name="[[udata.fname]] [[udata.lname]]" card-type="visa" credit-card="{{selectedData.cc}}" expiry-date="{{selectedData.exp}}" cvc="{{selectedData.cvc}}"></cc-form>
-            </template>
+        <br>
+        <paper-icon-button icon="my-icons:add" on-tap="addCard"></paper-icon-button>
+        <paper-icon-button icon="my-icons:remove" on-tap="removeCard" disabled="[[canRemove]]"></paper-icon-button>
+        <br>
+        <template is="dom-if" if="[[selectedData]]" restamp>
+            <cc-form id="ccform" preview-position="bottom" auto-validate full-name="[[udata.fname]] [[udata.lname]]" credit-card="{{selectedData.cc}}" expiry-date="{{selectedData.exp}}" cvc="{{selectedData.cvc}}"></cc-form>
         </template>
+        <paper-toast id="cardTypeWarning" text="We only accept Visa."></paper-toast>
     </template>
     <script>
         Polymer({
             is: 'payment-selector',
             properties: {
-                noEdit: {
+                valid: {
                     type: Boolean,
+                    notify: true,
                     value: false
+                },
+                notValid: {
+                    type: Boolean,
+                    notify: true,
+                    computed: "not(valid)"
                 },
                 canRemove: {
                     type: Boolean,
@@ -41,33 +53,66 @@
                 },
                 paymentDataParsed: {
                     type: Array,
+                    notify: true,
                     computed: "parsedPaymentData(paymentData)"
                 }
             },
-            addCard: function() {
-                this.set("udata.paymentId", this.$.paymentDb.ref.push({"cc": "", "cvc":"", "exp": ""}).key);
+            behaviors: [DEXS.CreditCardFormBehavior],
+            observers: ['check(udata.paymentId, selectedData)'],
+            check: function() {
+                this.checkValidity(this.selectedData);
             },
-            removeCard: function() {
+            checkValidity: function (data) {
+                if(typeof data.cc != "undefined") {
+                    var creditCard = CreditCardValidator.validate(data.cc);
+                    if(creditCard.valid && creditCard.card_type.name != "visa")
+                        this.$.cardTypeWarning.open();
+                    this.set("valid", creditCard.valid && creditCard.card_type.name == "visa" && this.validCVC(data.cvc) && this.validExp(data.exp.split("/")));
+                }
+            },
+            validCVC: function (cvc) {
+                if(isInt(cvc))
+                    return parseInt(cvc) > 99 && parseInt(cvc) < 1000;
+                return false;
+            },
+            validExp: function (expArr) {
+                var valid = false;
+                if(isInt(expArr[0]))
+                    valid = parseInt(expArr[0]) > 0 && parseInt(expArr[0]) < 13;
+                if(valid && isInt(expArr[1]))
+                    valid = parseInt(expArr[1]) >= (new Date()).getFullYear()-2000;
+                return valid;
+            },
+            addCard: function () {
+                this.set("udata.paymentId", this.$.paymentDb.ref.push({
+                    "cc": "",
+                    "cvc": "",
+                    "exp": ""
+                }).key);
+                this.check();
+            },
+            removeCard: function () {
                 var keys = Object.keys(this.paymentData);
                 var index = 0;
-                if(keys[index] == this.udata.paymentId)
-                    index = 1;
-                this.set("udata.paymentMethods."+this.udata.paymentId, null);
+                if (keys[index] == this.udata.paymentId) index = 1;
+                this.set("udata.paymentMethods." + this.udata.paymentId, null);
                 this.set("udata.paymentId", keys[index]);
+                this.checkValidity(this.selectedData);
             },
             moreThanOnePayment: function (data) {
                 return Object.keys(data).length < 2;
             },
             parsedPaymentData: function (data) {
                 var rtn = [];
-                for (var card in data) if(card!="new") rtn.push({
-                    "id": card,
-                    "icon": "credit-card",
-                    "firstLine": data[card].cc,
-                    "secondLine": "Expires: "+data[card].exp,
-                    "thirdLine": "Visa Credit Card",
-                    "xtraImg": "visa"
-                });
+                for (var card in data)
+                    if (card != "new") rtn.push({
+                        "id": card,
+                        "icon": "credit-card",
+                        "firstLine": data[card].cc,
+                        "secondLine": "Expires: " + data[card].exp,
+                        "thirdLine": "Visa Credit Card",
+                        "xtraImg": "visa"
+                    });
                 return rtn;
             },
             getTotalStock: function (stock) {
@@ -75,7 +120,7 @@
                 for (var id in stock) total += stock[id].quantity;
                 return total + " units in Stock";
             },
-            edit: function (bool) {
+            not: function (bool) {
                 return !bool;
             }
         });

@@ -3,43 +3,50 @@
 <dom-module id="order-selector">
     <style include="app-theme">
         :host {}
+
+        @media screen and (max-width: 390px) {
+            total-price {
+                --total-price-styles: {
+                    @apply(--general-selector-item-styles);
+                }
+            }
+        }
     </style>
     <template>
-        <firebase-document path="/users/[[orderUserId]]/orders" data="{{orderData}}"></firebase-document>
-        <total-price tracking user-id="[[orderData.userid]]" store-id="[[orderData.storeId]]" quantities="[[orderData.cart]]" cart-total="{{orderTotal}}"></total-price>
-        <general-selector repeat-items="[[orderDataParsed]]" selected="{{orderId}}" store></general-selector>
+        <firebase-document path="/users/[[udata.id]]/orders" data="{{orderData}}"></firebase-document>
+        <firebase-document path="/users/[[udata.id]]/orders/[[selectedOrderId]]" data="{{selectedOrderData}}"></firebase-document>
+        <total-price tracking user-id="[[selectedOrderData.userId]]" store-id="[[selectedOrderData.storeId]]" quantities="[[selectedOrderData.cart]]"></total-price><br><br>
+        <general-selector repeat-items="[[orderDataParsed]]" selected="{{selectedOrderId}}" store></general-selector>
     </template>
     <script>
         Polymer({
             is: 'order-selector',
             properties: {
+                selectedOrderId: {
+                    notify: true,
+                },
                 orderDataParsed: {
                     type: Array,
-                    notify: true,
-                    computed: "parsedOrderData(orderData, orderTotal)"
-                },
-                orderId: {
-                    observer: "orderIdChanged"
+                    computed: "parsedOrderData(orderData)"
                 }
             },
-            orderIdChanged: function (value) {
-                console.log("value");
-                console.log(value);
-                console.log("this.orderId");
-                console.log(this.orderId);
-            },
-            parsedOrderData: function (data, total) {
+            parsedOrderData: function (data) {
                 var rtn = [];
-                for (var order in data) if(order!="new") rtn.push({
-                    "id": order,
-                    "icon": "receipt",
-                    "firstLine": order,
-                    "secondLine": "Status: "+data[order].status,
-                    "thirdLine": (new Date(data[order].timestamp)).toLocaleString(),
-                    "xtraData": total
-                });
-                console.log(rtn);
+                for (var order in data)
+                    if (order != "new") rtn.push({
+                        "id": order,
+                        "icon": "receipt",
+                        "firstLine": order,
+                        "secondLine": "Status: " + data[order].delivery.status,
+                        "thirdLine": (new Date(data[order].timestamp)).toLocaleString()
+                    });
                 return rtn;
+            },
+            parseJson: function () {
+                var items = [].slice.apply(arguments);
+                return items.reduce(function (acc, item) {
+                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
+                }, "");
             }
         });
     </script>

@@ -43,6 +43,7 @@
         store-selector {
             --max-general-selector-width: 300px;
             --general-selector-styles: {
+                margin: auto;
                 @apply(--shadow-elevation-2dp);
             }
         }
@@ -89,7 +90,7 @@
         <template is="dom-if" if="[[store]]">
             <paper-input id="search" class="filteredWidth" autocorrect="off" label="Search" value="{{search}}" style="width: [[filterWidth]]px;">
                 <iron-icon icon="my-icons:search" prefix></iron-icon>
-                <paper-menu-button suffix dynamic-align horizontal-offset="0px">
+                <paper-menu-button suffix dynamic-align close-on-activate>
                     <paper-icon-button icon="my-icons:store" class="dropdown-trigger" suffix></paper-icon-button>
                     <div class="dropdown-content">
                         <store-selector udata="{{udata}}"></store-selector>
