@@ -39,7 +39,7 @@
 
 ### Start (serve) the App
 
-This command serves the app at a basic localhost URL `http://localhost:8080`:
+This command serves the app at a basic localhost URL `[localhost:8080](localhost:8080)`:
 ```
     polymer serve -p 8080
 ```
@@ -48,3 +48,6 @@ Adding the `-o` flag opens the website automatically, but at a 404:
 ```
     polymer serve -o
 ```
+Navigate to [localhost:8080](localhost:8080) to use the app.
+
+Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-store.firebaseapp.com).
