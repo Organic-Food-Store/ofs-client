@@ -52,4 +52,4 @@ Navigate to [localhost:8080](http://localhost:8080) to use the app.
 
 Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-store.firebaseapp.com).
 
-Note: Whether local or hosted, the app will only use the [organic-food-store.herokuapp.com/api](https://organic-food-store.herokuapp.com/api) for any serverside calls.
+***Note: Whether local or hosted, the app will only use the [organic-food-store.herokuapp.com/api](https://organic-food-store.herokuapp.com/api) for all serverside calls.***
