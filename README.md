@@ -25,6 +25,8 @@ The Independent Polymer Website hosted at [Firebase](organic-food-store.firebase
     $ npm install -g polymer-cli
 ```
 
+## Running Locally
+
 ### Make a Clone of the Project on your Machine
 
 6. Clone the project and go into it's path.
