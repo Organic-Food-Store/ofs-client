@@ -1,12 +1,12 @@
 # OFS
 
-### Setup
+## Setup
 
-##### Prerequisites
+##### Install Prerequisites
 
 1. Install [Git](https://git-scm.com/downloads).
 
-2. Install an [active LTS version of Node.js](https://github.com/nodejs/LTS) (4.x or 6.x). The current version (7.x) should work, but is not officially supported.
+2. Install an [active LTS version of Node.js](https://github.com/nodejs/LTS), preferably (7.x).
 
 3. Update npm.
 ```
@@ -20,22 +20,25 @@ npm install -g bower
 
 5. Install Polymer CLI.
 ```
-npm install -g polymer-cli@next
+npm install -g polymer-cli
 ```
 
-##### Make a clone of the project on your machine
+##### Make a Clone of the Project on your Machine
 
+6. Clone the project and go into it's path.
+```
     git clone https://github.com/Organic-Food-Store/ofs-client
     cd ofs-client
-    
-Then do the following commands:
+```
 
+6. Install all the dependencies for the app:
+```
     npm install
     bower install
+```
 
-### Start the server
+### Start (serve) the App
 
-This command serves the app at `http://localhost:8080` and provides basic URL
-routing for the app:
+This command serves the app at a basic localhost URL `http://localhost:8080`:
 
-    polymer serve --open
+    polymer serve -p 8080
