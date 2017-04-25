@@ -2,7 +2,7 @@
 
 ## Setup
 
-##### Install Prerequisites
+### Install Prerequisites
 
 1. Install [Git](https://git-scm.com/downloads).
 
@@ -23,7 +23,7 @@ npm install -g bower
 npm install -g polymer-cli
 ```
 
-##### Make a Clone of the Project on your Machine
+### Make a Clone of the Project on your Machine
 
 6. Clone the project and go into it's path.
 ```
