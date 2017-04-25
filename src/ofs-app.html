@@ -56,12 +56,9 @@
 <link rel="import" href="./payment-selector.html">
 <!--
 TODO NOW:
-    - Fix server side tracking
-    - Finalize Readme
     - Manage logging in
     - Properly Implement Address
     - Implement an address validator / zip getter
-    - Properly implement splash screen
     - Implement Paper Tags into the store to Search and Filter after pressing enter
     - Make home page unscrollable on mobile
 -->
@@ -278,21 +275,31 @@ TODO NOW:
             ready: function () {},
             handleLogin: function () {
                 // alert("Logging in is in development.\n\nYou can still use the website normally.\n");
-                this.$.loginToast.open();
-                // if(user && loggedIn && userStatus && user.isAnonymous) return "Merge Now";
-                // if(user && loggedIn && userStatus && !user.isAnonymous) return "Sign Out"
-                // else return automagically login as anonymous
-                // if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) { // Make sure to check if logged in as anonymous or not logged in
-                // if(!this.user) {
+                // this.$.loginToast.open();
+
+                // if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) {
+                //     Merge Data and/or create a new User
                 //     log("LOGGING IN...");
                 //     var anonymousUid = this.user.uid;
+                //     log("anonymousUid");
                 //     log(anonymousUid);
                 //     this.set("makeBackup", false);
                 //     this.set("userData", null);
-                //     this.$.auth.signOut();
-                //     this.$.auth.signInWithPopup();
-                //     log("MERGING "+anonymousUid+" INTO THE FIREBASE...");
+                //     this.$.auth.signOut().then(function() {
+                //         this.$.auth.signInWithPopup().then(function() {
+                //             log("MERGING "+anonymousUid+" INTO THE FIREBASE...");
+
+                //         });
+                //     });
                 //     log("anonymousUid");
+                // } else if(this.user && this.loggedIn && this.userStatus && !this.user.isAnonymous) {
+                //     Signout and sign in as anonymous
+                // } else {
+                //     login as anonymous
+                // }
+
+                // if(!this.user) {
+                //
                 //     // Handle Linking In - Manually Move over Data from userDataBackup, whether anonymous or not.
                 //         // turn off user backing data up
                 //         // Delete data in users
@@ -382,8 +389,7 @@ TODO NOW:
                         temp.email = user.email;
                         temp.photo = user.photoURL;
                         temp.fname = user.displayName.split(' ')[0];
-                        temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[
-                            user.displayName.split(' ').length - 1] : "";
+                        temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length - 1] : "";
                     }
                     temp.address = "";
                     temp.addrlat = "";
@@ -479,11 +485,12 @@ TODO NOW:
                 log(loggedIn);
                 log("userStatus");
                 log(userStatus);
-                if (!this.user && !loggedIn && userStatus) log("SIGNING IN ANONYMOUSLY...");
-                if (!this.user && !loggedIn && userStatus) this.$.auth.signInAnonymously();
-                // if(user && loggedIn && userStatus && user.isAnonymous) return "You're Anonymous";
+                if (!user && !loggedIn && userStatus) log("SIGNING IN ANONYMOUSLY...");
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                if (user && loggedIn && userStatus && !user.isAnonymous) return "sign out";
+                if (!user && !loggedIn && userStatus) this.$.auth.signInAnonymously().then(function() {
+                    if (user && loggedIn && userStatus && !user.isAnonymous) return "sign out";
+                });
+                else if (user && loggedIn && userStatus && !user.isAnonymous) return "sign out";
                 return "sign in";
             },
             handleError: function (event) {

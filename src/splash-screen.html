@@ -119,9 +119,8 @@
             },
             ready: function () {
                 var that = this;
-                if (this.rippleDisplay != "none") rippleSim = setInterval(function () {
-                    that.$.ripple.simulatedRipple();
-                }, that.rippleFreq);
+                if (this.rippleDisplay != "none") rippleSim = setInterval(function () { that.$.ripple.simulatedRipple(); }, that.rippleFreq);
+                setTimeout(function () { that.animate(); }, that.fadeTime);
             },
             getAnimiation: function (time) {
                 return {
@@ -136,9 +135,9 @@
                 }, this.animDelay);
             },
             _onNeonAnimationFinish: function () {
-                // this.style.display = 'none';
                 this.remove();
                 log("Splashscreen Cleared");
+                clearRipple();
             },
             getSpinnerSize: function (iSize, subSize) {
                 return iSize - subSize;
@@ -148,15 +147,9 @@
                 this.updateStyles();
             }
         });
-        document.addEventListener('DOMContentLoaded', function () {
-            log("DOMContentLoaded");
-            document.querySelector('splash-screen').animate();
+
+        function clearRipple() {
             clearInterval(rippleSim);
-        });
-        document.addEventListener('WebComponentsReady', function () {
-            log("WebComponentsReady");
-            document.querySelector('splash-screen').animate();
-            clearInterval(rippleSim);
-        });
+        }
     </script>
 </dom-module>
