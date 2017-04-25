@@ -6,7 +6,7 @@
 
 1. Install [Git](https://git-scm.com/downloads).
 
-2. Install an [active LTS version of Node.js](https://github.com/nodejs/LTS), preferably (7.x).
+2. Install [Node.js](https://nodejs.org/en/download/current), preferably (7.x).
 
 3. Update npm.
 ```
