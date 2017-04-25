@@ -43,3 +43,8 @@ This command serves the app at a basic localhost URL `http://localhost:8080`:
 ```
     polymer serve -p 8080
 ```
+
+Adding the `-o` flag opens the website automatically, but at a 404:
+```
+    polymer serve -o
+```
