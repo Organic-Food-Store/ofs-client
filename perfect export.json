@@ -1,0 +1,721 @@
+{
+    "branches": [94401, 95125],
+    "categories": ["dairy", "fruits", "meat", "seafood", "vegetables"],
+    "data": "closestStore",
+    "orders": {
+        "732331788976195636611": "oYn79tnDmzOQbQAmNPpNEEbG1CC2"
+    },
+    "stock": ["butter", "cheese", "iceCream", "milk", "yogurt", "apple", "avocado", "banana", "kiwi", "lemon", "orange", "raspberry", "strawberry", "tomato", "watermelon", "bacon", "chicken", "chickenWing", "groundBeef", "lamb", "porkChop", "sausage", "steak", "cod", "crab", "lobster", "octopus", "oyster", "prawn", "salmon", "scallop", "artichoke", "asparagus", "bellPepper", "broccoli", "carrot", "eggplant", "kale", "potato", "zucchini"],
+    "stores": {
+        "94401": {
+            "address": "198 Baldwin Ave",
+            "branch": "San Mateo Downtown Branch",
+            "stock": {
+                "apple": {
+                    "category": "fruits",
+                    "description": "red, juicy, crisp",
+                    "id": "apple",
+                    "price": 0.75,
+                    "quantity": 50
+                },
+                "artichoke": {
+                    "category": "vegetables",
+                    "description": "fresh, green",
+                    "id": "artichoke",
+                    "price": 3.5,
+                    "quantity": 50
+                },
+                "asparagus": {
+                    "category": "vegetables",
+                    "description": "fresh by the pound",
+                    "id": "asparagus",
+                    "price": 1.7,
+                    "quantity": 50
+                },
+                "avocado": {
+                    "category": "fruits",
+                    "description": "creamy green goodness",
+                    "id": "avocado",
+                    "price": 0.5,
+                    "quantity": 50
+                },
+                "bacon": {
+                    "category": "meat",
+                    "description": "fresh by the pound",
+                    "id": "bacon",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "banana": {
+                    "category": "fruits",
+                    "description": "ripe, yellow fruit",
+                    "id": "banana",
+                    "price": 0.7,
+                    "quantity": 50
+                },
+                "bellPepper": {
+                    "category": "vegetables",
+                    "description": "red, green, yellow varieties",
+                    "id": "bellPepper",
+                    "price": 0.7,
+                    "quantity": 50
+                },
+                "broccoli": {
+                    "category": "vegetables",
+                    "description": "fresh green veggies",
+                    "id": "broccoli",
+                    "price": 1.1,
+                    "quantity": 50
+                },
+                "butter": {
+                    "category": "dairy",
+                    "description": "16 oz. fresh",
+                    "id": "butter",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "carrot": {
+                    "category": "vegetables",
+                    "description": "fresh orange veggies",
+                    "id": "carrot",
+                    "price": 0.25,
+                    "quantity": 50
+                },
+                "cheese": {
+                    "category": "dairy",
+                    "description": "block cheese",
+                    "id": "cheese",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "chicken": {
+                    "category": "meat",
+                    "description": "chicken breast",
+                    "id": "chicken",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "chickenWing": {
+                    "category": "meat",
+                    "description": "6 pieces. made fresh",
+                    "id": "chickenWing",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "cod": {
+                    "category": "seafood",
+                    "description": "cod fillet",
+                    "id": "cod",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "crab": {
+                    "category": "seafood",
+                    "description": "freshly cooked",
+                    "id": "crab",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "eggplant": {
+                    "category": "vegetables",
+                    "description": "large, purple eggplant",
+                    "id": "eggplant",
+                    "price": 1.5,
+                    "quantity": 50
+                },
+                "groundBeef": {
+                    "category": "meat",
+                    "description": "80% lean by the pound",
+                    "id": "groundBeef",
+                    "price": 5,
+                    "quantity": 50
+                },
+                "iceCream": {
+                    "category": "dairy",
+                    "description": "cold, creamy, sweet",
+                    "id": "iceCream",
+                    "price": 6,
+                    "quantity": 50
+                },
+                "kale": {
+                    "category": "vegetables",
+                    "description": "bag of leafy greens",
+                    "id": "kale",
+                    "price": 2.99,
+                    "quantity": 50
+                },
+                "kiwi": {
+                    "category": "fruits",
+                    "description": "fresh, green",
+                    "id": "kiwi",
+                    "price": 0.5,
+                    "quantity": 50
+                },
+                "lamb": {
+                    "category": "meat",
+                    "description": "loin chops",
+                    "id": "lamb",
+                    "price": 9,
+                    "quantity": 50
+                },
+                "lemon": {
+                    "category": "fruits",
+                    "description": "fresh, yellow",
+                    "id": "lemon",
+                    "price": 0.4,
+                    "quantity": 50
+                },
+                "lobster": {
+                    "category": "seafood",
+                    "description": "lobster tails",
+                    "id": "lobster",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "milk": {
+                    "category": "dairy",
+                    "description": "1 gallon",
+                    "id": "milk",
+                    "price": 3.5,
+                    "quantity": 50
+                },
+                "octopus": {
+                    "category": "seafood",
+                    "description": "fresh by the pound",
+                    "id": "octopus",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "orange": {
+                    "category": "fruits",
+                    "description": "fresh oranges",
+                    "id": "orange",
+                    "price": 0.99,
+                    "quantity": 50
+                },
+                "oyster": {
+                    "category": "seafood",
+                    "description": "fresh by the dozen",
+                    "id": "oyster",
+                    "price": 20,
+                    "quantity": 50
+                },
+                "porkChop": {
+                    "category": "meat",
+                    "description": "center cut",
+                    "id": "porkChop",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "potato": {
+                    "category": "vegetables",
+                    "description": "5 lb. bag",
+                    "id": "potato",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "prawn": {
+                    "category": "seafood",
+                    "description": "freshly cooked",
+                    "id": "prawn",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "raspberry": {
+                    "category": "fruits",
+                    "description": "6 oz. pack, red",
+                    "id": "raspberry",
+                    "price": 2.5,
+                    "quantity": 50
+                },
+                "salmon": {
+                    "category": "seafood",
+                    "description": "fresh atlantic fillets",
+                    "id": "salmon",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "sausage": {
+                    "category": "meat",
+                    "description": "gourmet sausages",
+                    "id": "sausage",
+                    "price": 4.5,
+                    "quantity": 50
+                },
+                "scallop": {
+                    "category": "seafood",
+                    "description": "fresh sea scallops",
+                    "id": "scallop",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "steak": {
+                    "category": "meat",
+                    "description": "beef ribeye",
+                    "id": "steak",
+                    "price": 12,
+                    "quantity": 50
+                },
+                "strawberry": {
+                    "category": "fruits",
+                    "description": "1 lb. pack, red",
+                    "id": "strawberry",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "tomato": {
+                    "category": "fruits",
+                    "description": "juicy red",
+                    "id": "tomato",
+                    "price": 0.75,
+                    "quantity": 50
+                },
+                "watermelon": {
+                    "category": "fruits",
+                    "description": "large seedless",
+                    "id": "watermelon",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "yogurt": {
+                    "category": "dairy",
+                    "description": "6-pack, creamy",
+                    "id": "yogurt",
+                    "price": 5,
+                    "quantity": 50
+                },
+                "zucchini": {
+                    "category": "vegetables",
+                    "description": "fresh, green",
+                    "id": "zucchini",
+                    "price": 0.5,
+                    "quantity": 50
+                }
+            }
+        },
+        "95125": {
+            "address": "1092 Cherry Ave",
+            "branch": "San Jose Willow Glen Branch",
+            "stock": {
+                "apple": {
+                    "category": "fruits",
+                    "description": "red, juicy, crisp",
+                    "id": "apple",
+                    "price": 0.75,
+                    "quantity": 50
+                },
+                "artichoke": {
+                    "category": "vegetables",
+                    "description": "fresh, green",
+                    "id": "artichoke",
+                    "price": 3.5,
+                    "quantity": 50
+                },
+                "asparagus": {
+                    "category": "vegetables",
+                    "description": "1 lb. bag, green",
+                    "id": "asparagus",
+                    "price": 2.7,
+                    "quantity": 50
+                },
+                "avocado": {
+                    "category": "fruits",
+                    "description": "creamy green goodness",
+                    "id": "avocado",
+                    "price": 0.5,
+                    "quantity": 50
+                },
+                "bacon": {
+                    "category": "meat",
+                    "description": "fresh by the pound",
+                    "id": "bacon",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "banana": {
+                    "category": "fruits",
+                    "description": "ripe, yellow",
+                    "id": "banana",
+                    "price": 1,
+                    "quantity": 50
+                },
+                "bellPepper": {
+                    "category": "vegetables",
+                    "description": "red, green, yellow",
+                    "id": "bellPepper",
+                    "price": 0.7,
+                    "quantity": 50
+                },
+                "broccoli": {
+                    "category": "vegetables",
+                    "description": "fresh, green",
+                    "id": "broccoli",
+                    "price": 1.1,
+                    "quantity": 50
+                },
+                "butter": {
+                    "category": "dairy",
+                    "description": "16 oz. fresh",
+                    "id": "butter",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "carrot": {
+                    "category": "vegetables",
+                    "description": "fresh, orange",
+                    "id": "carrot",
+                    "price": 0.25,
+                    "quantity": 50
+                },
+                "cheese": {
+                    "category": "dairy",
+                    "description": "block cheese",
+                    "id": "cheese",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "chicken": {
+                    "category": "meat",
+                    "description": "chicken breast",
+                    "id": "chicken",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "chickenWing": {
+                    "category": "meat",
+                    "description": "6 pieces made fresh",
+                    "id": "chickenWing",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "cod": {
+                    "category": "seafood",
+                    "description": "pacific cod fillet",
+                    "id": "cod",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "crab": {
+                    "category": "seafood",
+                    "description": "fresh cooked dungeness crab",
+                    "id": "crab",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "eggplant": {
+                    "category": "vegetables",
+                    "description": "large, purple",
+                    "id": "eggplant",
+                    "price": 1.5,
+                    "quantity": 50
+                },
+                "groundBeef": {
+                    "category": "meat",
+                    "description": "80% lean by the pound",
+                    "id": "groundBeef",
+                    "price": 5,
+                    "quantity": 50
+                },
+                "iceCream": {
+                    "category": "dairy",
+                    "description": "cold, creamy, sweet",
+                    "id": "iceCream",
+                    "price": 6,
+                    "quantity": 50
+                },
+                "kale": {
+                    "category": "vegetables",
+                    "description": "bag of leafy greens",
+                    "id": "kale",
+                    "price": 2.99,
+                    "quantity": 50
+                },
+                "kiwi": {
+                    "category": "fruits",
+                    "description": "fresh, green",
+                    "id": "kiwi",
+                    "price": 0.5,
+                    "quantity": 50
+                },
+                "lamb": {
+                    "category": "meat",
+                    "description": "lamb loin chops",
+                    "id": "lamb",
+                    "price": 9,
+                    "quantity": 50
+                },
+                "lemon": {
+                    "category": "fruits",
+                    "description": "fresh, yellow",
+                    "id": "lemon",
+                    "price": 0.4,
+                    "quantity": 50
+                },
+                "lobster": {
+                    "category": "seafood",
+                    "description": "fresh lobster tails",
+                    "id": "lobster",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "milk": {
+                    "category": "dairy",
+                    "description": "1 gallon",
+                    "id": "milk",
+                    "price": 3.5,
+                    "quantity": 50
+                },
+                "octopus": {
+                    "category": "seafood",
+                    "description": "fresh by the pound",
+                    "id": "octopus",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "orange": {
+                    "category": "fruits",
+                    "description": "fresh oranges",
+                    "id": "orange",
+                    "price": 0.99,
+                    "quantity": 50
+                },
+                "oyster": {
+                    "category": "seafood",
+                    "description": "fresh by the dozen",
+                    "id": "oyster",
+                    "price": 20,
+                    "quantity": 50
+                },
+                "porkChop": {
+                    "category": "meat",
+                    "description": "center cut",
+                    "id": "porkChop",
+                    "price": 7,
+                    "quantity": 50
+                },
+                "potato": {
+                    "category": "vegetables",
+                    "description": "5 lb. bag",
+                    "id": "potato",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "prawn": {
+                    "category": "seafood",
+                    "description": "freshly cooked",
+                    "id": "prawn",
+                    "price": 3,
+                    "quantity": 50
+                },
+                "raspberry": {
+                    "category": "fruits",
+                    "description": "6 oz. pack, red",
+                    "id": "raspberry",
+                    "price": 2.5,
+                    "quantity": 50
+                },
+                "salmon": {
+                    "category": "seafood",
+                    "description": "fresh atlantic fillet",
+                    "id": "salmon",
+                    "price": 10,
+                    "quantity": 50
+                },
+                "sausage": {
+                    "category": "meat",
+                    "description": "gourmet sausages",
+                    "id": "sausage",
+                    "price": 4.5,
+                    "quantity": 50
+                },
+                "scallop": {
+                    "category": "seafood",
+                    "description": "fresh sea scallops",
+                    "id": "scallop",
+                    "price": 8,
+                    "quantity": 50
+                },
+                "steak": {
+                    "category": "meat",
+                    "description": "beef ribeye",
+                    "id": "steak",
+                    "price": 12,
+                    "quantity": 50
+                },
+                "strawberry": {
+                    "category": "fruits",
+                    "description": "1 lb. pack, red",
+                    "id": "strawberry",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "tomato": {
+                    "category": "fruits",
+                    "description": "juicy, red",
+                    "id": "tomato",
+                    "price": 0.75,
+                    "quantity": 50
+                },
+                "watermelon": {
+                    "category": "fruits",
+                    "description": "large, seedless",
+                    "id": "watermelon",
+                    "price": 4,
+                    "quantity": 50
+                },
+                "yogurt": {
+                    "category": "dairy",
+                    "description": "6-pack, creamy",
+                    "id": "yogurt",
+                    "price": 5,
+                    "quantity": 50
+                },
+                "zucchini": {
+                    "category": "vegetables",
+                    "description": "fresh, green",
+                    "id": "zucchini",
+                    "price": 0.5,
+                    "quantity": 50
+                }
+            }
+        }
+    },
+    "users": {
+        "oYn79tnDmzOQbQAmNPpNEEbG1CC2": {
+            "address": "",
+            "addrlat": "",
+            "addrlng": "",
+            "cart": {
+                "94401": {
+                    "apple": "0",
+                    "artichoke": "0",
+                    "asparagus": "0",
+                    "avocado": "0",
+                    "bacon": "0",
+                    "banana": "0",
+                    "bellPepper": "0",
+                    "broccoli": "0",
+                    "butter": "0",
+                    "carrot": "0",
+                    "cheese": "0",
+                    "chicken": "0",
+                    "chickenWing": "0",
+                    "cod": "0",
+                    "crab": "0",
+                    "eggplant": "0",
+                    "groundBeef": "0",
+                    "iceCream": "0",
+                    "kale": "0",
+                    "kiwi": "0",
+                    "lamb": "0",
+                    "lemon": "0",
+                    "lobster": "0",
+                    "milk": "0",
+                    "octopus": "0",
+                    "orange": "0",
+                    "oyster": "0",
+                    "porkChop": "0",
+                    "potato": "0",
+                    "prawn": "0",
+                    "raspberry": "0",
+                    "salmon": "0",
+                    "sausage": "0",
+                    "scallop": "0",
+                    "steak": "0",
+                    "strawberry": "0",
+                    "tomato": "0",
+                    "watermelon": "0",
+                    "yogurt": "0",
+                    "zucchini": "0"
+                },
+                "95125": {
+                    "apple": "0",
+                    "artichoke": "0",
+                    "asparagus": "0",
+                    "avocado": "0",
+                    "bacon": "0",
+                    "banana": "0",
+                    "bellPepper": "0",
+                    "broccoli": "0",
+                    "butter": "0",
+                    "carrot": "0",
+                    "cheese": "0",
+                    "chicken": "0",
+                    "chickenWing": "0",
+                    "cod": "0",
+                    "crab": "0",
+                    "eggplant": "0",
+                    "groundBeef": "0",
+                    "iceCream": "0",
+                    "kale": "0",
+                    "kiwi": "0",
+                    "lamb": "0",
+                    "lemon": "0",
+                    "lobster": "0",
+                    "milk": "0",
+                    "octopus": "0",
+                    "orange": "0",
+                    "oyster": "0",
+                    "porkChop": "0",
+                    "potato": "0",
+                    "prawn": "0",
+                    "raspberry": "0",
+                    "salmon": "0",
+                    "sausage": "0",
+                    "scallop": "0",
+                    "steak": "0",
+                    "strawberry": "0",
+                    "tomato": "0",
+                    "watermelon": "0",
+                    "yogurt": "0",
+                    "zucchini": "0"
+                }
+            },
+            "email": "",
+            "fname": "Oindril",
+            "id": "oYn79tnDmzOQbQAmNPpNEEbG1CC2",
+            "lname": "Dutta",
+            "orderId": "663187794981273667582",
+            "orders": {
+                "732331788976195636611": {
+                    "cart": {
+                        "95125": {
+                            "artichoke": 1,
+                            "avocado": 1
+                        }
+                    },
+                    "delivery": {
+                        "currentLat": 37.283411,
+                        "currentLong": -121.826445,
+                        "endLat": 37.283111,
+                        "endLong": -121.826245,
+                        "startLat": 37.295056,
+                        "startLong": -121.89144,
+                        "status": "Delivered",
+                        "steps": 0.8369407228138499
+                    },
+                    "orderId": "732331788976195636611",
+                    "paymentId": "-KhSsvI4sS_S7Ppjf5u_",
+                    "storeId": "95125",
+                    "timestamp": 1493102489671,
+                    "userId": "oYn79tnDmzOQbQAmNPpNEEbG1CC2"
+                }
+            },
+            "paymentId": "-KhSsvI4sS_S7Ppjf5u_",
+            "paymentMethods": {
+                "-KhSsvI4sS_S7Ppjf5u_": {
+                    "cc": "4000 0000 0000 0002",
+                    "cvc": "142",
+                    "exp": "05/17"
+                }
+            },
+            "photo": "./../images/anon.png",
+            "storeId": "95125",
+            "storelat": 37.295056,
+            "storelng": -121.89144,
+            "zipcode": "95014",
+            "ziplat": 37.306491,
+            "ziplng": -122.08064
+        }
+    }
+}

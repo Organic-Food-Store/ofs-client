@@ -109,6 +109,7 @@ TODO NOW:
         <firebase-app auth-domain="organic-food-store.firebaseapp.com" database-url="https://organic-food-store.firebaseio.com/" api-key="AIzaSyADZP5ekWtNbt3LdkSMC7Ng5BQL_AUwzPg"> </firebase-app>
         <firebase-auth id="auth" user="{{user}}" provider="google" signed-in="{{loggedIn}}" status-known="{{userStatus}}" on-error="handleError"> </firebase-auth>
         <firebase-document path="/users/{{user.uid}}" data="{{userData}}"> </firebase-document>
+        <firebase-document path="/users/{{selectedUser}}" data="{{sUserData}}"> </firebase-document>
         <firebase-document path="/stock" data="{{latestStock}}"> </firebase-document>
         <firebase-document path="/branches" data="{{latestStores}}"> </firebase-document>
         <iron-ajax id="zipsAjax" auto url="./zips.json" handle-as="json" last-response="{{zipsJsonData}}"></iron-ajax>
@@ -120,57 +121,27 @@ TODO NOW:
         <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
         <app-drawer-layout fullbleed responsive-width="[[responsiveWidth]]px">
             <app-drawer id="drawer" align="[[drawerAlign]]" swipe-open>
-                <app-toolbar elevation="2">
-                    <iron-icon id="drawerMenuIcon" icon="my-icons:menu"></iron-icon>Menu</app-toolbar>
-                <paper-menu id="drawerMenu" selected="[[page]]" attr-for-selected="name"
-                    class="drawer-list" role="navigation">
-                    <a name="home" href="/home" tabindex="-1">
-                        <paper-icon-item>
-                            <iron-icon icon="my-icons:home" item-icon></iron-icon>Home</paper-icon-item>
-                    </a>
-                    <a name="dashboard" href="/dashboard" tabindex="-1">
-                        <paper-icon-item>
-                            <iron-icon icon="my-icons:dashboard" item-icon></iron-icon>Dashboard</paper-icon-item>
-                    </a>
-                    <a name="store" href="/store" tabindex="-1">
-                        <paper-icon-item>
-                            <iron-icon icon="my-icons:store" item-icon></iron-icon>Store</paper-icon-item>
-                    </a>
-                    <a name="tracking" href="/tracking" tabindex="-1">
-                        <paper-icon-item>
-                            <!--<img src="./../images/droneIcon.svg" item-icon id="droneIcon">-->
-                            <iron-icon icon="my-icons:tracking" item-icon></iron-icon>Tracking</paper-icon-item>
-                    </a>
-                    <a name="cart" href="/cart" tabindex="-1">
-                        <paper-icon-item>
-                            <iron-icon icon="my-icons:cart" item-icon></iron-icon>Cart</paper-icon-item>
-                    </a>
-                    <a name="about" href="/about" tabindex="-1">
-                        <paper-icon-item>
-                            <iron-icon icon="my-icons:info" item-icon></iron-icon>About</paper-icon-item>
-                    </a>
+                <app-toolbar elevation="2"><iron-icon id="drawerMenuIcon" icon="my-icons:menu"></iron-icon>Menu</app-toolbar>
+                <paper-menu id="drawerMenu" selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a name="home" href="/home" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:home" item-icon></iron-icon>Home</paper-icon-item></a>
+                    <a name="dashboard" href="/dashboard" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:dashboard" item-icon></iron-icon>Dashboard</paper-icon-item></a>
+                    <a name="store" href="/store" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:store" item-icon></iron-icon>Store</paper-icon-item></a>
+                    <a name="tracking" href="/tracking" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:tracking" item-icon></iron-icon>Tracking</paper-icon-item></a>
+                    <a name="cart" href="/cart" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:cart" item-icon></iron-icon>Cart</paper-icon-item></a>
+                    <a name="about" href="/about" tabindex="-1"><paper-icon-item><iron-icon icon="my-icons:info" item-icon></iron-icon>About</paper-icon-item></a>
                 </paper-menu>
             </app-drawer>
             <app-header-layout has-scrolling-region>
                 <app-header condenses reveals shadow effects="waterfall">
                     <app-toolbar elevation="2" class$="[[transparent]]">
-                        <a href="/{{backPage}}" tabindex="-1">
-                            <paper-icon-button icon="my-icons:arrow-back"></paper-icon-button>
-                        </a>
+                        <a href="/{{backPage}}" tabindex="-1"><paper-icon-button icon="my-icons:arrow-back"></paper-icon-button></a>
                         <template is="dom-if" if="[[bigEnough(currentWidth)]]">
-                            <a href="/" tabindex="-1">
-                                <paper-icon-button icon="my-icons:home"></paper-icon-button>
-                            </a>
+                            <a href="/" tabindex="-1"><paper-icon-button icon="my-icons:home"></paper-icon-button></a>
                         </template>
-                        <div id="mainTitle" main-title>
-                            <template is="dom-if" if="[[bigEnough(currentWidth)]]">OFS | </template>[[capitalize(page)]]</div>
-                        <paper-button on-tap="handleLogin" raised>
-                            <iron-icon icon="my-icons:[[userAction]]"></iron-icon>[[capitalize(userAction)]] </paper-button>
+                        <div id="mainTitle" main-title><template is="dom-if" if="[[bigEnough(currentWidth)]]">OFS | </template>[[capitalize(page)]]</div>
+                        <paper-button on-tap="handleLogin" raised><iron-icon icon="my-icons:[[userAction]]"></iron-icon>[[capitalize(userAction)]]</paper-button>
                         <template is="dom-if" if="[[showDashboard(userData.fname, currentWidth)]]">
-                            <a href="/dashboard" tabindex="-1">
-                                <paper-button raised>
-                                    <iron-icon icon="my-icons:dashboard"></iron-icon> Hi, [[capitalize(userData.fname)]]! </paper-button>
-                            </a>
+                            <a href="/dashboard" tabindex="-1"><paper-button raised><iron-icon icon="my-icons:dashboard"></iron-icon>Hi, [[capitalize(userData.fname)]]!</paper-button></a>
                         </template>
                         <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
                     </app-toolbar>
@@ -182,13 +153,14 @@ TODO NOW:
                     <ofs-store name="store" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-store>
                     <ofs-cart name="cart" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-cart>
                     <ofs-checkout name="checkout" zdata="[[zipsJsonData]]" udata="{{userData}}" latest-stores="[[latestStores]]" latest-stock="[[latestStock]]"></ofs-checkout>
-                    <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking> <!-- selected-order-id="{{userData.orderId}}" -->
+                    <ofs-tracking name="tracking" h="[[currentHeight]]" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-tracking>
                     <ofs-404 name="404" zdata="[[zipsJsonData]]" udata="{{userData}}"></ofs-404>
                 </iron-pages>
             </app-header-layout>
         </app-drawer-layout>
-        <paper-toast id="welcomeToast" text="Welcome New Customer!"></paper-toast>
-        <paper-toast id="loginToast" text="Signing In is in Development. You can still use the website normally."></paper-toast>
+        <paper-toast id="welcomeToast" text="Welcome, New Customer!"></paper-toast>
+        <paper-toast id="loginToast" text="Logging in with Google..."></paper-toast>
+        <paper-toast id="loggedInToast" text="Welcome, [[capitalize(userData.fname)]] [[capitalize(userData.lname)]]!"></paper-toast>
     </template>
     <script>
         Polymer({
@@ -267,70 +239,96 @@ TODO NOW:
                 'stopStoreIdChanges': 'stopStoreIdChanged',
                 'startStoreIdChanges': 'startStoreIdChanged'
             },
-            observers: ['routePageChanged(routeData.page)', 'zipLatLng(userData.zipcode)',
+            observers: [
+                'routePageChanged(routeData.page)',
+                'zipLatLng(userData.zipcode)',
                 'addrLatLng(userData.address)',
                 'setUpNewUser(userExists, existsAjaxReq, user, latestStores, latestStock)',
-                'setNewStore(closestStoreId, storeAjaxReq, userData.zipcode)', 'keepAnonBackup(userData.*)'
+                'setNewStore(closestStoreId, storeAjaxReq, userData.zipcode)',
+                'keepAnonBackup(userData.*)'
             ],
             ready: function () {},
             handleLogin: function () {
-                // alert("Logging in is in development.\n\nYou can still use the website normally.\n");
-                // this.$.loginToast.open();
-
-                // if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) {
-                //     Merge Data and/or create a new User
-                //     log("LOGGING IN...");
-                //     var anonymousUid = this.user.uid;
-                //     log("anonymousUid");
-                //     log(anonymousUid);
-                //     this.set("makeBackup", false);
-                //     this.set("userData", null);
-                    // this.$.auth.signOut().then(function() {
-                    //     this.$.auth.signInWithPopup().then(function() {
-                    //         log("MERGING "+anonymousUid+" INTO THE FIREBASE...");
-                    //            log("anonymousUid");
-
-                //         });
-                //     });
-                // } else if(this.user && this.loggedIn && this.userStatus && !this.user.isAnonymous) {
-                //     Signout and sign in as anonymous
-                // } else {
-                //     login as anonymous
-                // }
-
-                // if(!this.user) {
-                //
-                //     // Handle Linking In - Manually Move over Data from userDataBackup, whether anonymous or not.
-                //         // turn off user backing data up
-                //         // Delete data in users
-                //         // Sign Out of Anonymous
-                //         // Delete account
-                //     // Manually Move Data
-                //         // Manually create key with google uid
-                //         // Put Firebase uid as user.uid
-                //         // If Email data from google exists, use that, else Replace Firebase Email with backup Email, unless empty
-                //         // If photoURL data from google exists, use that, else Replace Firebase photoURL with backup photoURL, unless invalid or empty
-                //         // If Firstname data from google exists, use that, else Replace Firebase fname with backup fname, unless Customer or empty
-                //         // If Lastname data from google exists, use that, else Replace Firebase lname with backup lname, unless empty
-                //         // Replace Firebase Address with backup Address, unless invalid or empty
-                //         // Folllow suit addrLat, addrLng
-                //         // Replace Firebase zipcode with backup zipcode, unless invalid or empty
-                //         // Folllow suit with storeId, zipLat, zipLng
-                //         // Replace Firebase orderHistory with lesser objects; basically do a shallow merge with non duplicacy
-                //         // Replace Firebase paymentMethods with lesser objects; basically do a shallow merge with non duplicacy
-                //     // Code to get new google user data
-                //         // temp.id = user.uid;
-                //         // temp.email = user.email;
-                //         // temp.photo = user.photoURL;
-                //         // temp.fname = user.displayName.split(' ')[0];
-                //         // temp.lname = user.displayName.split(' ').length > 1 ? user.displayName.split(' ')[user.displayName.split(' ').length-1] : "";
-                //     this.set("makeBackup", true);
-                //     // Reload
-                // } else {
-                //     log("LOGGING OUT...");
-                //     this.$.auth.signOut();
-                //     location.reload();
-                // }
+                console.log("=============================NEW LOGIN REQUEST============================");
+                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) {
+                    this.$.loginToast.open();
+                    console.log("Merge Data and/or create a new User");
+                    console.log("LOGGING OUT TO LOG IN...");
+                    var anonymousUid = this.user.uid;
+                    console.log("anonymousUid");
+                    console.log(anonymousUid);
+                    var oldData = this.userDataBackup;
+                    console.log("oldData");
+                    console.log(oldData);
+                    var stores = this.latestStores;
+                    var stock = this.latestStock;
+                    this.set("makeBackup", false);
+                    this.set("userData", null);
+                    var that = this;
+                    this.$.auth.signOut().then(function() {
+                        that.$.auth.signInWithPopup('google').then(function(newUser) {
+                            console.log("LOGGING IN...");
+                            console.log("Anonymous User Data");
+                            console.log(that.user);
+                            console.log("anonymousUid");
+                            console.log(anonymousUid);
+                            console.log("Removing Old Anonymous User");
+                            that.user.delete();
+                            console.log("newUser User Data");
+                            console.log(newUser);
+                            console.log("newUser.user.uid");
+                            console.log(newUser.user.uid);
+                            console.log("MERGING "+anonymousUid+" DATA INTO NEW ID "+newUser.user.uid+" BY ADDING NEW LOGGED IN USER INTO FIREBASE...");
+                            console.log("Old Anonymous User Data");
+                            console.log(oldData);
+                            temp = {};
+                            temp.id = newUser.user.uid;
+                            temp.fname = newUser.user.displayName.split(' ')[0] ? newUser.user.displayName.split(' ')[0] : oldData.fname && oldData.fname != "Customer" ? oldData.fname : "";
+                            temp.lname = newUser.user.displayName.split(' ').length > 1 ? newUser.user.displayName.split(' ')[newUser.user.displayName.split(' ').length - 1] : oldData.lname ? oldData.lname : "";
+                            temp.email = newUser.user.email ? newUser.user.email : oldData.email ? oldData.email : "";
+                            temp.photo = newUser.user.photoURL ? newUser.user.photoURL : oldData.photoURL ? oldData.photoURL : "";
+                            console.log("New User Data");
+                            console.log(temp.id);
+                            console.log(temp.email);
+                            console.log(temp.photo);
+                            console.log(temp.fname);
+                            console.log(temp.lname);
+                            temp.address = oldData.address ? oldData.address : "";
+                            temp.addrlat = "";
+                            temp.addrlng = "";
+                            temp.zipcode = oldData.zipcode ? oldData.zipcode : "";
+                            temp.ziplat = "";
+                            temp.ziplng = "";
+                            temp.storeId = oldData.storeId ? oldData.storeId : "95125";
+                            temp.storelat = "";
+                            temp.storelng = "";
+                            temp.cart = {};
+                            for (var store in stores) {
+                                temp.cart[stores[store]] = {};
+                                for (var food in stock) temp.cart[stores[store]][stock[food]] = oldData.cart[stores[store]][stock[food]] ? oldData.cart[stores[store]][stock[food]] : "0";
+                            }
+                            temp.paymentMethods = {'-KhSsvI4sS_S7Ppjf5u_': {
+                                "cc": "",
+                                "cvc": "",
+                                "exp": ""
+                            }};
+                            if(oldData.paymentMethods) for(var card in oldData.paymentMethods)
+                                temp[card] = oldData.paymentMethods[card];
+                            temp.paymentId = Object.keys(temp.paymentMethods)[0];
+                            temp.orders = !!oldData.orders && !(Object.keys(oldData.orders).length === 0 && (oldData.orders).constructor === Object) ? oldData.orders : {};
+                            temp.orderId = !(Object.keys(temp.orders).length === 0 && (temp.orders).constructor === Object) ? Object.keys(temp.orders)[0] : "";
+                            that.set("selectedUser", temp.id);
+                            that.set("sUserData", temp);
+                            that.set("makeBackup", true);
+                            that.$.loggedInToast.open();
+                        });
+                    });
+                } else {
+                    console.log("Signout and sign in as anonymous");
+                    log("LOGGING OUT...");
+                    this.$.auth.signOut().then(function () { location.reload(); });
+                }
+                log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
             handleResponse: function (event) {
                 log("=============================NEW AJAX RESPONSE============================");
@@ -364,7 +362,7 @@ TODO NOW:
                 }
             },
             addrLatLng: function (addr) {},
-            setUpNewUser: function (exists, URL, user, stores, stock) { // Deal with either on serverside, or somewhere else so that all the data exists
+            setUpNewUser: function (exists, URL, user, stores, stock) {
                 log("===========================NEW USER EXIST CHECK===========================");
                 log("exists");
                 log(exists);
@@ -377,7 +375,9 @@ TODO NOW:
                 log("stock");
                 log(stock);
                 if (exists && exists.exists === false) log("exists.exists === false");
-                if (exists && this.user && exists.exists === false) {
+                log("exists && this.user && this.user.isAnonymous && exists.exists === false && this.makeBackup");
+                log(exists && this.user && this.user.isAnonymous && exists.exists === false && this.makeBackup);
+                if (exists && this.user && this.user.isAnonymous && exists.exists === false && this.makeBackup) {
                     log("GOTTA ADD " + this.user.uid + "! CREATING NEW USER...");
                     temp = {};
                     temp.id = user.uid;
@@ -451,7 +451,7 @@ TODO NOW:
                 log("===========================ANONYMOUS BACKING UP===========================");
                 log("changeRecord");
                 log(changeRecord);
-                log("changeRecord Path Change - " + changeRecord.path + ': '); //+ parseJson(changeRecord.value));
+                log("changeRecord Path Change - " + changeRecord.path + ': ');
                 log(changeRecord.value);
                 log("this.user");
                 log(this.user);
@@ -465,10 +465,10 @@ TODO NOW:
                 log(this.loggedIn);
                 log("this.userStatus");
                 log(this.userStatus);
-                if (this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
+                if (this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup) {
                     log("MAKING A BACKUP...");
-                if (this.user && this.loggedIn && this.userStatus && this.user.isAnonymous && this.makeBackup)
                     this.set("userDataBackup", this.userData);
+                }
                 log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             },
             getUserAction: function (user, loggedIn, userStatus) {
@@ -520,7 +520,6 @@ TODO NOW:
             },
             getDrawerAlignment: function (width, limit, page) {
                 return width > 1000 ? "left" : "right";
-                // return (limit === 9999 || page === "home") ? "right" : (width > 1000 ? "left" : "right");
             },
             routePageChanged: function (page) {
                 this.page = page || 'home';
@@ -565,17 +564,13 @@ TODO NOW:
             },
             parseJson: function () {
                 var items = [].slice.apply(arguments);
-                return items.reduce(function (acc, item) {
-                    return acc + "\nObject\n" + JSON.stringify(item, null, 4);
-                }, "");
+                return items.reduce(function (acc, item) { return acc + "\nObject\n" + JSON.stringify(item, null, 4); }, "");
             }
         });
 
         function parseJson() {
             var items = [].slice.apply(arguments);
-            return items.reduce(function (acc, item) {
-                return acc + "\nObject\n" + JSON.stringify(item, null, 4);
-            }, "");
+            return items.reduce(function (acc, item) { return acc + "\nObject\n" + JSON.stringify(item, null, 4); }, "");
         }
         var debug = false;
 
