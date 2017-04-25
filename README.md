@@ -10,17 +10,17 @@
 
 3. Update npm.
 ```
-npm install npm@latest -g
+    npm install npm@latest -g
 ```
 
 4. Install the latest version of Bower.
 ```
-npm install -g bower
+    npm install -g bower
 ```
 
 5. Install Polymer CLI.
 ```
-npm install -g polymer-cli
+    npm install -g polymer-cli
 ```
 
 ### Make a Clone of the Project on your Machine
@@ -40,5 +40,6 @@ npm install -g polymer-cli
 ### Start (serve) the App
 
 This command serves the app at a basic localhost URL `http://localhost:8080`:
-
+```
     polymer serve -p 8080
+```
