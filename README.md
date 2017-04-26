@@ -67,5 +67,3 @@ Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-
 ## Using the Client
 
 The Hosted Client can be opened up on both web and mobile devices, and here is a demo of usage of the client:
-
-<iframe align="center" width="630" height="394" src="https://www.useloom.com/embed/739067c114ad4c48ae03e894049d1407" frameborder="0" allowfullscreen></iframe>
