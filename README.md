@@ -1,5 +1,7 @@
 # OFS - Client
 
+![OFS Logo](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png)
+
 The Independent Polymer Website hosted at [Firebase](organic-food-store.firebaseapp.com).
 
 ## Setup
