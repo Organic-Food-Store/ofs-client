@@ -1,12 +1,10 @@
-# OFS - Client
+<h1 align="center">OFS - Client</h1>
 
 <p align="center">
   <a href="organic-food-store.firebaseapp.com" target="_blank">
     <img src="https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png" width="50%">
   </a>
 </p>
-
-![OFS Logo](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png)
 
 The Independent Polymer Website hosted at [Firebase](organic-food-store.firebaseapp.com).
 
