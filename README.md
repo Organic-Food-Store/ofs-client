@@ -63,3 +63,9 @@ Navigate to [localhost:8080](http://localhost:8080) to use the app.
 Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-store.firebaseapp.com).
 
 ***Note: Whether local or hosted, the app will only use the [organic-food-store.herokuapp.com/api](https://organic-food-store.herokuapp.com/api) for all serverside calls.***
+
+## Using the Client
+
+The Hosted Client can be opened up on both web and mobile devices, and here is a demo of usage of the client:
+
+<iframe align="center" width="630" height="394" src="https://www.useloom.com/embed/739067c114ad4c48ae03e894049d1407" frameborder="0" allowfullscreen></iframe>
