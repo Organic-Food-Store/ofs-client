@@ -12,6 +12,8 @@
 
 ### Install Prerequisites
 
+[![You can follow these steps in the Setup Video](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/dev/Capture.PNG)](https://www.useloom.com/share/0130bb002fcf408a908689f09be91490 "Client & Server Setup")
+
 1. Install [Git](https://git-scm.com/downloads).
 
 2. Install [Node.js](https://nodejs.org/en/download/current), preferably (7.x).
@@ -67,3 +69,5 @@ Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-
 ## Using the Client
 
 The Hosted Client can be opened up on both web and mobile devices, and here is a demo of usage of the client:
+
+[![Client Usage Video](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/dev/Capture.PNG)](https://www.useloom.com/share/0130bb002fcf408a908689f09be91490 "Client & Server Setup")
