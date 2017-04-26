@@ -13,7 +13,7 @@
 ### Install Prerequisites
 
 [![Verify Steps with Client & Server Setup Video](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/dev/Capture.PNG)](https://www.useloom.com/share/0130bb002fcf408a908689f09be91490 "Verify Steps with Client & Server Setup Video")
-##### Verify below step results with Client & Server Setup Video above
+##### Verify below step results with Client & Server Setup Video above - We recommend playing the video at 1.25x speed.
 
 1. Install [Git](https://git-scm.com/downloads).
 
@@ -72,4 +72,4 @@ Or use the same hosted app at [organic-food-store.firebaseapp.com](organic-food-
 #### The [Hosted Client](organic-food-store.firebaseapp.com) can be opened up on both web and mobile devices, and here is a demo of the client usage:
 
 [![Client Usage Video](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/dev/Capture2.PNG)](https://www.useloom.com/share/739067c114ad4c48ae03e894049d1407 "Client Usage Video")
-##### Client Usage Video - Changes have been made since video recording
+##### Client Usage Video - Changes have been made to the client since the time of video recording.
