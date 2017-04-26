@@ -1,6 +1,6 @@
 # OFS - Client
 
-<img align="center" src="https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png" alt="OFS Logo">
+<img style="text-align: center;" src="https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png" alt="OFS Logo">
 
 ![OFS Logo](https://raw.githubusercontent.com/Organic-Food-Store/ofs-client/master/images/logo.png)
 
