@@ -282,7 +282,7 @@ TODO NOW:
                             console.log("MERGING "+anonymousUid+" DATA INTO NEW ID "+newUser.user.uid+" BY ADDING NEW LOGGED IN USER INTO FIREBASE...");
                             console.log("Old Anonymous User Data");
                             console.log(oldData);
-                            that.set("selectedUser", newUser.user.uid);
+                            // that.set("selectedUser", newUser.user.uid);
                             temp = {};
                             temp.id = newUser.user.uid;
                             temp.fname = newUser.user.displayName.split(' ')[0] ? newUser.user.displayName.split(' ')[0] : oldData.fname && oldData.fname != "Customer" ? oldData.fname : "";
@@ -323,7 +323,7 @@ TODO NOW:
                             that.set("sUserData", temp);
                             that.set("makeBackup", true);
                             that.$.loggedInToast.open();
-                            // location.reload();
+                            location.reload();
                         });
                     });
                 } else {
