@@ -125,6 +125,8 @@
                 var dataEvent = event.detail.sourceEvent.path[0].dataHost.id;
                 if(dataEvent === "fname" || dataEvent === "lname" || dataEvent === "address")
                     this.set("udata."+dataEvent, capitalize(this.get("udata."+dataEvent)));
+                if(dataEvent === "" && !this.zdata[this.udata.zipcode])
+                    this.set("udata.zipcode", "");
                 this.fire('startStoreIdChanges');
             },
             getLat: function (zips, zip) {

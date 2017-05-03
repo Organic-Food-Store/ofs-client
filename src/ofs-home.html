@@ -178,6 +178,8 @@
                 (this.route === "store") ? this.set("r.path", "/store") : null;
             },
             userZipChange: function () {
+                if(!this.zdata[this.udata.zipcode])
+                    this.set("udata.zipcode", "");
                 this.fire('startStoreIdChanges');
             },
             gotValidZip: function (zip) {
