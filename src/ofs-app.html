@@ -249,83 +249,83 @@ TODO NOW:
             ],
             ready: function () {},
             handleLogin: function () {
-                // this.$.development.open();
-                console.log("=============================NEW LOGIN REQUEST============================");
-                if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) {
-                    this.$.loginToast.open();
-                    console.log("Merge Data and/or create a new User");
-                    console.log("LOGGING OUT TO LOG IN...");
-                    var anonymousUid = this.user.uid;
-                    console.log("anonymousUid");
-                    console.log(anonymousUid);
-                    var oldData = this.userDataBackup;
-                    console.log("oldData");
-                    console.log(oldData);
-                    var stores = this.latestStores;
-                    var stock = this.latestStock;
-                    this.set("makeBackup", false);
-                    this.set("userData", null);
-                    var that = this;
-                    this.$.auth.signOut().then(function() {
-                        that.$.auth.signInWithPopup('google').then(function(newUser) {
-                            console.log("LOGGING IN...");
-                            console.log("Anonymous User Data");
-                            console.log(that.user);
-                            console.log("anonymousUid");
-                            console.log(anonymousUid);
-                            console.log("Removing Old Anonymous User");
-                            that.user.delete();
-                            console.log("newUser User Data");
-                            console.log(newUser);
-                            console.log("newUser.user.uid");
-                            console.log(newUser.user.uid);
-                            console.log("MERGING "+anonymousUid+" DATA INTO NEW ID "+newUser.user.uid+" BY ADDING NEW LOGGED IN USER INTO FIREBASE...");
-                            console.log("Old Anonymous User Data");
-                            console.log(oldData);
-                            // that.set("selectedUser", newUser.user.uid);
-                            temp = {};
-                            temp.id = newUser.user.uid;
-                            temp.fname = newUser.user.displayName.split(' ')[0] ? newUser.user.displayName.split(' ')[0] : oldData.fname && oldData.fname != "Customer" ? oldData.fname : "";
-                            temp.lname = newUser.user.displayName.split(' ').length > 1 ? newUser.user.displayName.split(' ')[newUser.user.displayName.split(' ').length - 1] : oldData.lname ? oldData.lname : "";
-                            temp.email = newUser.user.email ? newUser.user.email : oldData.email ? oldData.email : "";
-                            temp.photo = newUser.user.photoURL ? newUser.user.photoURL : oldData.photoURL ? oldData.photoURL : "";
-                            console.log("New User Data");
-                            console.log(temp.id);
-                            console.log(temp.email);
-                            console.log(temp.photo);
-                            console.log(temp.fname);
-                            console.log(temp.lname);
-                            temp.address = oldData.address ? oldData.address : "";
-                            temp.addrlat = "";
-                            temp.addrlng = "";
-                            temp.zipcode = oldData.zipcode ? oldData.zipcode : "";
-                            temp.ziplat = "";
-                            temp.ziplng = "";
-                            temp.storeId = oldData.storeId ? oldData.storeId : "95125";
-                            temp.storelat = "";
-                            temp.storelng = "";
-                            temp.cart = {};
-                            for (var store in stores) {
-                                temp.cart[stores[store]] = {};
-                                for (var food in stock) temp.cart[stores[store]][stock[food]] = oldData.cart[stores[store]][stock[food]] ? oldData.cart[stores[store]][stock[food]] : "0";
-                            }
-                            temp.paymentMethods = {'-KhSsvI4sS_S7Ppjf5u_': {
-                                "cc": "",
-                                "cvc": "",
-                                "exp": ""
-                            }};
-                            if(oldData.paymentMethods) for(var card in oldData.paymentMethods)
-                                temp[card] = oldData.paymentMethods[card];
-                            temp.paymentId = Object.keys(temp.paymentMethods)[0];
-                            temp.orders = !!oldData.orders && !(Object.keys(oldData.orders).length === 0 && (oldData.orders).constructor === Object) ? oldData.orders : {};
-                            temp.orderId = !(Object.keys(temp.orders).length === 0 && (temp.orders).constructor === Object) ? Object.keys(temp.orders)[0] : "";
-                            that.set("selectedUser", temp.id);
-                            that.set("sUserData", temp);
-                            that.set("makeBackup", true);
-                            that.$.loggedInToast.open();
-                            location.reload();
-                        });
-                    });
+                this.$.development.open();
+                // console.log("=============================NEW LOGIN REQUEST============================");
+                // if(this.user && this.loggedIn && this.userStatus && this.user.isAnonymous) {
+                //     this.$.loginToast.open();
+                //     console.log("Merge Data and/or create a new User");
+                //     console.log("LOGGING OUT TO LOG IN...");
+                //     var anonymousUid = this.user.uid;
+                //     console.log("anonymousUid");
+                //     console.log(anonymousUid);
+                //     var oldData = this.userDataBackup;
+                //     console.log("oldData");
+                //     console.log(oldData);
+                //     var stores = this.latestStores;
+                //     var stock = this.latestStock;
+                //     this.set("makeBackup", false);
+                //     this.set("userData", null);
+                //     var that = this;
+                //     this.$.auth.signOut().then(function() {
+                //         that.$.auth.signInWithPopup('google').then(function(newUser) {
+                //             console.log("LOGGING IN...");
+                //             console.log("Anonymous User Data");
+                //             console.log(that.user);
+                //             console.log("anonymousUid");
+                //             console.log(anonymousUid);
+                //             console.log("Removing Old Anonymous User");
+                //             that.user.delete();
+                //             console.log("newUser User Data");
+                //             console.log(newUser);
+                //             console.log("newUser.user.uid");
+                //             console.log(newUser.user.uid);
+                //             console.log("MERGING "+anonymousUid+" DATA INTO NEW ID "+newUser.user.uid+" BY ADDING NEW LOGGED IN USER INTO FIREBASE...");
+                //             console.log("Old Anonymous User Data");
+                //             console.log(oldData);
+                //             // that.set("selectedUser", newUser.user.uid);
+                //             temp = {};
+                //             temp.id = newUser.user.uid;
+                //             temp.fname = newUser.user.displayName.split(' ')[0] ? newUser.user.displayName.split(' ')[0] : oldData.fname && oldData.fname != "Customer" ? oldData.fname : "";
+                //             temp.lname = newUser.user.displayName.split(' ').length > 1 ? newUser.user.displayName.split(' ')[newUser.user.displayName.split(' ').length - 1] : oldData.lname ? oldData.lname : "";
+                //             temp.email = newUser.user.email ? newUser.user.email : oldData.email ? oldData.email : "";
+                //             temp.photo = newUser.user.photoURL ? newUser.user.photoURL : oldData.photoURL ? oldData.photoURL : "";
+                //             console.log("New User Data");
+                //             console.log(temp.id);
+                //             console.log(temp.email);
+                //             console.log(temp.photo);
+                //             console.log(temp.fname);
+                //             console.log(temp.lname);
+                //             temp.address = oldData.address ? oldData.address : "";
+                //             temp.addrlat = "";
+                //             temp.addrlng = "";
+                //             temp.zipcode = oldData.zipcode ? oldData.zipcode : "";
+                //             temp.ziplat = "";
+                //             temp.ziplng = "";
+                //             temp.storeId = oldData.storeId ? oldData.storeId : "95125";
+                //             temp.storelat = "";
+                //             temp.storelng = "";
+                //             temp.cart = {};
+                //             for (var store in stores) {
+                //                 temp.cart[stores[store]] = {};
+                //                 for (var food in stock) temp.cart[stores[store]][stock[food]] = oldData.cart[stores[store]][stock[food]] ? oldData.cart[stores[store]][stock[food]] : "0";
+                //             }
+                //             temp.paymentMethods = {'-KhSsvI4sS_S7Ppjf5u_': {
+                //                 "cc": "",
+                //                 "cvc": "",
+                //                 "exp": ""
+                //             }};
+                //             if(oldData.paymentMethods) for(var card in oldData.paymentMethods)
+                //                 temp[card] = oldData.paymentMethods[card];
+                //             temp.paymentId = Object.keys(temp.paymentMethods)[0];
+                //             temp.orders = !!oldData.orders && !(Object.keys(oldData.orders).length === 0 && (oldData.orders).constructor === Object) ? oldData.orders : {};
+                //             temp.orderId = !(Object.keys(temp.orders).length === 0 && (temp.orders).constructor === Object) ? Object.keys(temp.orders)[0] : "";
+                //             that.set("selectedUser", temp.id);
+                //             that.set("sUserData", temp);
+                //             that.set("makeBackup", true);
+                //             that.$.loggedInToast.open();
+                //             location.reload();
+                //         });
+                //     });
                 } else {
                     console.log("Signout and sign in as anonymous");
                     log("LOGGING OUT...");
